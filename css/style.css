@@ -1,0 +1,255 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: arial, sans-serif;
+	background-color: #F5F5F5;
+	font-size: larger;
+}
+
+h1 {
+	margin: 1%;
+	padding: 1%;
+	border-radius: 10px;
+	box-shadow: 1px 1px 2px gray;
+	background-color: #ffffff;
+}
+
+h3 {
+	text-decoration: underline;
+}
+
+h4 {
+	display:flex;
+	justify-content: center;
+	align-items:center;
+}
+
+h1,
+.columnChkBox {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+	transform: translateY(10px);
+	animation: fadeUp 0.6s ease-out forwards;
+}
+
+.containerButtons {
+	display: flex;
+	justify-content: center;
+	/* border: 1px solid black; */
+	margin: 1%;
+	padding: 1%;
+	border-radius: 10px;
+	box-shadow: 1px 1px 2px gray;
+	background-color: #ffffff;
+	opacity: 0;
+	transform: translateY(50px);
+	animation: fadeUp .6s ease-out forwards;
+}
+
+button {
+	padding: 10px;
+	width: 100%;
+	margin-inline: 1%;
+	font-size: medium;
+}
+
+.btnCalcular,
+.btnRefresh,
+.btnPrint,
+.btnSave {
+	opacity: 100%;
+	transition: 0.2s;
+	border: 1px solid gray;
+	box-shadow: none;
+	border-radius:5px;
+}
+
+.btnCalcular:hover,
+.btnRefresh:hover,
+.btnPrint:hover,
+.btnSave:hover {
+	background-color: white;
+	box-shadow: 1px 1px 1px gray;
+}
+
+form {
+	width: 100%;
+}
+
+form,
+.referenceTable {
+	/* border: 1px solid black; */
+	height: auto;
+	margin-inline: 1%;
+	border-radius: 10px;
+	box-shadow: 1px 1px 2px gray;
+	background-color: #ffffff;
+	padding: 1%;
+	opacity: 0;
+	transform: translateY(30px);
+	animation: fadeUp .6s ease-out forwards;
+}
+
+.divGuia {
+	height: auto;
+	margin-inline: 10%;
+	border-radius: 10px;
+	box-shadow: 1px 1px 2px gray;
+	background-color: #ffffff;
+	padding-inline:5%;
+	padding-block:3%;
+	opacity: 0;
+	transform: translateY(30px);
+	animation: fadeUp .6s ease-out forwards;
+}
+
+.containerTable {
+	width: 100%;
+	height: 100%;
+	margin-inline: 1%;
+}
+
+@keyframes fadeUp {
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+footer {
+	margin-top: 1%;
+	padding: 1%;
+	display: flex;
+	justify-content: center;
+	background-color: #ffffff;
+	font-size: medium;
+}
+
+.divTitulos {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+}
+
+
+.columnHE,
+.columnHS {
+	display: flex;
+}
+
+
+.divRow {
+	align-items: center;
+}
+
+.divRow,
+.referenceTable {
+	display: flex;
+	justify-content: center;
+}
+
+
+.container {
+	justify-content: center;
+	text-align: center;
+	align-items: center;
+	width: 100%;
+}
+
+.container,
+.columnDate,
+.columnWeek,
+.columnChkBox,
+.Column {
+	margin: 1%;
+}
+
+.inputHE,
+.inputME,
+.inputHS,
+.inputMS {
+	width: 100%;
+	border: 1px solid none;
+}
+
+.checkBoxFerDom {
+	width: 20px;
+	display: flex;
+	justify-content: center;
+	cursor: pointer;
+}
+
+.inputJHDN,
+.inputJHN,
+.inputJHDF,
+.inputJHNF {
+	width: 100%;
+}
+
+main {
+	display: flex;
+}
+
+input,
+.containerSpan {
+	height: 30px;
+	text-align: center;
+	font-size: large;
+}
+
+.containerSpan {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: aliceblue;
+	width: 100%;
+}
+
+.hrInvisible {
+	border: none;
+}
+
+hr {
+	margin: 10px;
+}
+
+nav {
+	height: auto;
+	box-shadow: 1px 1px 2px gray;
+	background-color: #ffffff;
+	padding: 10px;
+	display: flex;
+	align-items: center;
+}
+
+.ulNAv {
+
+	padding: 5px;
+	display: flex;
+}
+
+.liNav {
+	margin-inline: 5px;
+	list-style: none;
+}
+
+li {
+	font-size: medium;
+	line-height: 2;
+}
+
+a {
+	text-decoration: none;
+	color: gray;
+	transition: 0.2s;
+}
+
+a:hover {
+	color: #000;
+	text-decoration: underline;
+}

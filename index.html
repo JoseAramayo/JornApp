@@ -1,0 +1,155 @@
+<html lang="es-ES">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>JornApp</title>
+	<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+	<nav>
+		<span>JornApp | </span>
+		<div>
+			<ul class="ulNAv">
+				<li class="liNav">
+					<a href="index.html">🏠︎ Inicio</a>
+				</li>
+				<li class="liNav">
+					<a href="help.html">⚒︎ Ayuda</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+	<h1>Cálculo de Salario (<span id="mes">MesActual</span>)</h1>
+	<main>
+		<form>
+			<div class="divTitulos">
+				<div class="container">
+					<h3 title="Feriado/Domingo">Fer/Dom</h3>
+				</div>
+				<div class="container">
+					<h3>Día</h3>
+				</div>
+				<div class="container">
+					<h3>Fecha</h3>
+				</div>
+				<div class="container">
+					<h3>Entrada</h3>
+				</div>
+				<div class="container">
+					<h3>Salida</h3>
+				</div>
+			</div>
+		</form>
+		<div class="containerTable">
+			<div class="referenceTable">
+				<div class="column">
+					<h4>Diurno</h4>
+					<div class="containerSpan"> <span id="spanJornalDiurno">JornalDiaHora</span></div>
+
+					<hr class="hrInvisible">
+
+					<h4>Nocturno</h4>
+					<div class="containerSpan"> <span id="spanJornalNocturno">JornalNochehora</span></div>
+
+					<hr class="hrInvisible">
+
+					<h4>Diur. Fer/Dom</h4>
+					<div class="containerSpan"> <span id="spanDiaFerDom">Dia Fer/Dom</span> </div>
+
+					<hr class="hrInvisible">
+
+					<h4>Noct. Fer/Dom</h4>
+					<div class="containerSpan"> <span id="spanNocheFerDom">Noche Fer/Dom</span> </div>
+				</div>
+				<div class="column">
+					<h4>Horas</h4>
+					<div class="containerSpan"> <span id="spanTotalDiurnas">--</span></div>
+
+					<hr class="hrInvisible">
+
+					<h4>''</h4>
+					<div class="containerSpan"> <span id="spanTotalNocturnas">--</span></div>
+
+					<hr class="hrInvisible">
+
+					<h4>''</h4>
+					<div class="containerSpan"> <span id="spanTotalDFerDom">--</span> </div>
+
+					<hr class="hrInvisible">
+
+					<h4>''</h4>
+					<div class="containerSpan"> <span id="spanTotalNFerDom">--</span> </div>
+				</div>
+				<div class="column">
+					<h4>Total</h4>
+					<div class="containerSpan"> <span id="spanCobroDiurnas">--</span> </div>
+
+					<hr class="hrInvisible">
+
+					<h4>''</h4>
+					<div class="containerSpan"> <span id="spanCobroNocturnas">--</span> </div>
+
+					<hr class="hrInvisible">
+
+					<h4>''</h4>
+					<div class="containerSpan"> <span id="spanCobroDiaFerDom">--</span> </div>
+
+					<hr class="hrInvisible">
+
+					<h4>''</h4>
+					<div class="containerSpan"> <span id="spanCobroNocheFerDom">--</span> </div>
+				</div>
+				<div class="column">
+					<h4>IPS</h4>
+					<div class="containerSpan"> <span id="spanDescIPS">--</span> </div>
+	
+					<hr class="hrInvisible">
+
+					<h4>Días libres</h4>
+					<div class="containerSpan"> <span id="spanCantDiaLibre">--</span> </div>
+
+					<hr class="hrInvisible">
+					<h4>Total bruto</h4>
+					<div class="containerSpan"> <span id="spanTotalBruto">--</span> </div>
+
+					<hr class="hrInvisible">
+
+					<h4>Total neto</h4>
+					<div class="containerSpan"> <span id="spanTotalNeto">--</span> </div>
+				</div>
+			</div>
+			<div class="containerButtons">
+				<button class="btnCalcular" onclick="calcular()">Calcular ✅</button>
+				<button class="btnRefresh" onclick="reiniciar()">Reiniciar 🔄</button>
+				<button class="btnPrint" onclick="imprimir()" id="btnPrint">Imprimir 🖨️</button>
+				<button class="btnSave" disabled onclick="guardar()" id="btnSave">Guardar 💾</button>
+			</div>
+			<div class="containerButtons">
+				<input type="file" id="importarJson" accept=".json">
+			</div>
+		</div>
+	</main>
+	<footer>
+		<div class="column">
+			<p>Más información:</p>
+			<a href="help.html">Ayuda</a>
+			
+		</div>
+		<hr>
+		<div class="column">
+			<p>Versión:</p>
+			<p>1.0</p>
+		</div>
+		<hr>
+		<div class="column">
+			<p>Desarrollado por:</p>
+			<address>José Aramayo</address>
+		</div>
+	</footer>
+	<script src="js/script.js"></script>
+</body>
+</html>
