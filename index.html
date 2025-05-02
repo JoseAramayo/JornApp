@@ -57,14 +57,15 @@
 
 					<hr class="hrInvisible">
 
-					<h4>Diur. Fer/Dom</h4>
+					<h4 title="Diurnas Feriado/Domingo">Diur. F/D</h4>
 					<div class="containerSpan"> <span id="spanDiaFerDom">Dia Fer/Dom</span> </div>
 
 					<hr class="hrInvisible">
 
-					<h4>Noct. Fer/Dom</h4>
+					<h4 title="Nocturnas Feriado/Domingo">Noct. F/D</h4>
 					<div class="containerSpan"> <span id="spanNocheFerDom">Noche Fer/Dom</span> </div>
 				</div>
+				<hr>
 				<div class="column">
 					<h4>Horas</h4>
 					<div class="containerSpan"> <span id="spanTotalDiurnas">--</span></div>
@@ -84,6 +85,7 @@
 					<h4>''</h4>
 					<div class="containerSpan"> <span id="spanTotalNFerDom">--</span> </div>
 				</div>
+				<hr>
 				<div class="column">
 					<h4>Total</h4>
 					<div class="containerSpan"> <span id="spanCobroDiurnas">--</span> </div>
@@ -103,6 +105,7 @@
 					<h4>''</h4>
 					<div class="containerSpan"> <span id="spanCobroNocheFerDom">--</span> </div>
 				</div>
+				<hr>
 				<div class="column">
 					<h4>IPS</h4>
 					<div class="containerSpan"> <span id="spanDescIPS">--</span> </div>
@@ -128,8 +131,9 @@
 				<button class="btnPrint" onclick="imprimir()" id="btnPrint">Imprimir 🖨️</button>
 				<button class="btnSave" disabled onclick="guardar()" id="btnSave">Guardar 💾</button>
 			</div>
-			<div class="containerButtons">
-				<input type="file" id="importarJson" accept=".json">
+			<div class="containerImport">
+				<p>Importar archivo: </p>
+					<input type="file" id="importarJson" accept=".json">
 			</div>
 		</div>
 	</main>
