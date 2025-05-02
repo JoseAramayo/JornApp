@@ -207,7 +207,7 @@ function calcular() {
 	let cobroDiaFerDom = totalDFerdom * jornal[2];
 	let cobroNocheFerDom = totalNFerdom * jornal[3];
 	let totalBruto = cobroDiurnas + cobroNocturnas + cobroDiaFerDom + cobroNocheFerDom;
-	let descIPS = totalBruto - (totalBruto * 0.9);
+	let descIPS = totalBruto * 0.09;
 	let total = totalBruto - descIPS;
 	document.getElementById("spanTotalDiurnas").textContent = totalDiurnas;
 	document.getElementById("spanTotalNocturnas").textContent = totalNocturnas;
@@ -255,7 +255,7 @@ function guardar() {
 	const blob = new Blob([jsonDatos], { type: "application/json" });
 	const link = document.createElement("a");
 	link.href = URL.createObjectURL(blob);
-	link.download = `Horas_de_${meses[mes]}_${anio}.json`;
+	link.download = `${meses[mes]}_${anio}_horas.json`;
 	link.click();
 	URL.revokeObjectURL(link.href);
 	btnSave.disabled = true;
