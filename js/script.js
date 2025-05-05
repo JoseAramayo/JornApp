@@ -5,17 +5,22 @@ let formato = new Intl.NumberFormat('es-PY', { // dar formato de guaranies
 const form = document.querySelector("form");
 const fechaActual = new Date();
 const anio = fechaActual.getFullYear();
-const mes = fechaActual.getMonth(); // 0 = Enero, 11 = Diciembre
-const diasEnMes = new Date(anio, mes + 1, 0).getDate(); // Cantidad de días en el mes actual
+// const mes = fechaActual.getMonth(); // 0 = Enero, 11 = Diciembre
+
+document.getElementById("selectMes").value = fechaActual.getMonth();
+var mes = parseInt(document.getElementById("selectMes").value);
+
+
 let meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
-document.getElementById("mes").textContent = meses[mes];
 let jornal = [13453, 17489, 26906, 34978] //jornales x hora
 document.getElementById("spanJornalDiurno").textContent = formato.format(jornal[0]);
 document.getElementById("spanJornalNocturno").textContent = formato.format(jornal[1]);
 document.getElementById("spanDiaFerDom").textContent = formato.format(jornal[2]);
 document.getElementById("spanNocheFerDom").textContent = formato.format(jornal[3]);
+let diasEnMes;
 
-document.addEventListener("DOMContentLoaded", function () {
+function generarTabla(mesSeleccionado) {
+	diasEnMes = new Date(anio, mes + 1, 0).getDate(); // Cantidad de días en el mes actual
 	for (let dia = 1; dia <= diasEnMes; dia++) {
 		const fecha = new Date(anio, mes, dia);
 		const diaSemana = fecha.toLocaleDateString("es-ES", { weekday: "long" });
@@ -60,22 +65,25 @@ document.addEventListener("DOMContentLoaded", function () {
 			checkboxDom.disabled = true;
 		}
 	}
+};
+
+document.addEventListener("DOMContentLoaded", function () {
+	generarTabla();
 });
 
-let horaEntrada;
-let minutoEntrada;
-let horaSalida;
-let minutoSalida;
-let horasDiurnas;
-let horasNocturnas;
-let checkBoxFerDom;
-let totalDiurnas;
-let totalNocturnas;
-let totalDFerdom;
-let totalNFerdom;
-let cantDiaLibre;
+document.getElementById("selectMes").addEventListener("change", function () {
+	form.innerHTML = "";
+	mes = parseInt(this.value);
+	generarTabla(mes);
+});
+
+let horaEntrada, minutoEntrada, horaSalida, minutoSalida,
+	horasDiurnas, horasNocturnas, checkBoxFerDom, totalDiurnas,
+	totalNocturnas, totalDFerdom, totalNFerdom, cantDiaLibre;
 
 function calcular() {
+	diasEnMes = new Date(anio, mes + 1, 0).getDate(); // Cantidad de días en el mes actual
+
 	horaEntrada = [];
 	minutoEntrada = [];
 	horaSalida = [];
