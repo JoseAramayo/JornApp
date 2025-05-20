@@ -7,6 +7,7 @@
 	<link rel="icon" type="image/png" href="favicon.png">
 	<title>JornApp - Inicio</title>
 	<link rel="stylesheet" href="css/style.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 
 <body>
@@ -131,7 +132,7 @@
 					<hr class="hrInvisible">
 
 					<h4>Días libres</h4>
-					<div class="containerSpan"> <span id="spanCantDiaLibre">--</span> </div>
+					<div class="containerSpan"> <span id="spandiasLibres">--</span> </div>
 
 					<hr class="hrInvisible">
 					<h4>Total bruto</h4>
@@ -144,13 +145,14 @@
 				</div>
 			</div>
 			<div class="containerButtons">
-				<button class="btnCalcular" onclick="calcular()">Calcular ✅</button>
-				<button class="btnRefresh" onclick="reiniciar()">Reiniciar 🔄</button>
-				<button class="btnPrint" onclick="imprimir()" id="btnPrint">Imprimir 🖨️</button>
-				<button class="btnSave" disabled onclick="guardar()" id="btnSave">Guardar 💾</button>
+				<button class="btnCalcular" onclick="calcular()">Calcula ✅</button>
+				<button class="btnRefresh" onclick="reiniciar()">Reinicia 🔄</button>
+				<button class="btnPrint" onclick="imprimir()" id="btnPrint">PDF 🖨️</button>
+				<button class="btnSave" onclick="guardar()" id="btnSave">Guarda 💾</button>
+				<button class="btnExport" onclick="Export()" id="btnExport">Exporta 📈</button>
 			</div>
 			<div class="containerImport">
-				<p>Importar archivo: </p>
+				<p>Importar horas: </p>
 				<input type="file" id="importarJson" accept=".json">
 			</div>
 		</div>
