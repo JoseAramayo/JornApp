@@ -54,7 +54,8 @@ h4 {
 
 .containerButtons {
 	display: flex;
-	justify-content: center;
+
+	align-items:center;
 	margin: 1%;
 	padding: 1%;
 	border-radius: 10px;
@@ -89,20 +90,24 @@ button {
 .btnCalcular,
 .btnRefresh,
 .btnPrint,
-.btnSave {
+.btnSave,
+.btnExport {
 	opacity: 100%;
 	transition: 0.2s;
 	border: 1px solid gray;
 	box-shadow: none;
 	border-radius: 5px;
+	box-shadow: 1px 1px 1px gray;
+	background-color: #FDFDFD;
 }
 
 .btnCalcular:hover,
 .btnRefresh:hover,
 .btnPrint:hover,
-.btnSave:hover {
-	background-color: white;
-	box-shadow: 1px 1px 1px gray;
+.btnSave:hover,
+.btnExport:hover {
+	background-color: #E8E8E8;
+	box-shadow: none;
 }
 
 .formContainer {
@@ -171,6 +176,8 @@ footer {
 
 
 .divRow {
+	border:1px solid #E8E8E8;
+	border-radius:5px;
 	align-items: center;
 	opacity: 0;
 	transform: translateY(20px);
