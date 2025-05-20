@@ -5,12 +5,8 @@ let formato = new Intl.NumberFormat('es-PY', { // dar formato de guaranies
 const form = document.querySelector("form");
 const fechaActual = new Date();
 const anio = fechaActual.getFullYear();
-// const mes = fechaActual.getMonth(); // 0 = Enero, 11 = Diciembre
-
 document.getElementById("selectMes").value = fechaActual.getMonth();
 var mes = parseInt(document.getElementById("selectMes").value);
-
-
 let meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
 let jornal = [13453, 17489, 26906, 34978] //jornales x hora
 document.getElementById("spanJornalDiurno").textContent = formato.format(jornal[0]);
@@ -65,21 +61,46 @@ function generarTabla(mesSeleccionado) {
 			checkboxDom.disabled = true;
 		}
 	}
+	function validarInputRango(clase, min, max) {
+		document.querySelectorAll(`.${clase}`).forEach(input => {
+			input.addEventListener("input", () => {
+				let val = parseInt(input.value);
+				if (isNaN(val)) return;
+
+				if (val < min) input.value = min;
+				else if (val > max) input.value = max;
+			});
+			// Opcional: rellenar con 0 a la izquierda si es menor a 10
+			input.addEventListener("blur", () => {
+				let val = parseInt(input.value);
+				if (!isNaN(val)) {
+					input.value = val.toString().padStart(2, '0');
+				}
+			});
+		});
+	}
+	// Aplica la función a cada clase con su rango
+	validarInputRango("inputHE", 0, 23);
+	validarInputRango("inputHS", 0, 23);
+	validarInputRango("inputME", 0, 59);
+	validarInputRango("inputMS", 0, 59);
 };
 
 document.addEventListener("DOMContentLoaded", function () {
 	generarTabla();
+	calcular();
 });
 
 document.getElementById("selectMes").addEventListener("change", function () {
 	form.innerHTML = "";
 	mes = parseInt(this.value);
 	generarTabla(mes);
+	calcular();
 });
 
 let horaEntrada, minutoEntrada, horaSalida, minutoSalida,
 	horasDiurnas, horasNocturnas, checkBoxFerDom, totalDiurnas,
-	totalNocturnas, totalDFerdom, totalNFerdom, cantDiaLibre;
+	totalNocturnas, totalDFerdom, totalNFerdom, diasLibres, horasExcel;
 
 function calcular() {
 	diasEnMes = new Date(anio, mes + 1, 0).getDate(); // Cantidad de días en el mes actual
@@ -95,10 +116,12 @@ function calcular() {
 	totalNocturnas = 0;
 	totalDFerdom = 0;
 	totalNFerdom = 0;
-	cantDiaLibre = 0;
+	diasLibres = 0;
+	horasExcel = [];
 
 	for (let i = 0; i < diasEnMes; i++) {
 		let c = i + 1; //
+
 		//Guardar datos en arreglos
 		let inputHE = document.getElementById(`HE${c}`);
 		let inputME = document.getElementById(`ME${c}`);
@@ -114,19 +137,22 @@ function calcular() {
 			horaSalida.push(horaSa);
 			minutoSalida.push(minuSa);
 		}
+
 		//Minutos a horas (decimal)
 		minutoEntrada[i] /= 60;
 		minutoSalida[i] /= 60;
 		horaEntrada[i] += parseFloat(minutoEntrada[i].toFixed(2));
 		horaSalida[i] += parseFloat(minutoSalida[i].toFixed(2));
-		//Calculo de horas diurnas, nocturnas, Dia/Noche FerDom.
+
 		let checkbox = document.getElementById(`checkBoxId${c}`);
+
+		//Calculo de horas diurnas, nocturnas, Dia/Noche FerDom.
 		if (checkbox && checkbox.checked) {
 			checkBoxFerDom[i] = c;
 			// console.log("cumple condicion");
 			if (horaEntrada[i] == 0 && horaSalida[i] == 0) {
 				// console.log("Dia libre");
-				cantDiaLibre += 1;
+				diasLibres += 1;
 			} else {
 				if (horaSalida[i] === 0) {
 					horaSalida[i] = 24;
@@ -167,7 +193,7 @@ function calcular() {
 			checkBoxFerDom[i] = 0;
 			if (horaEntrada[i] == 0 && horaSalida[i] == 0) {
 				// console.log("Dia libre");
-				cantDiaLibre += 1;
+				diasLibres += 1;
 			} else {
 				if (horaSalida[i] === 0) {
 					horaSalida[i] = 24;
@@ -205,6 +231,8 @@ function calcular() {
 				}
 			}
 		}
+		horasExcel.push(horasDiurnas[i]);
+		horasExcel.push(horasNocturnas[i]);
 	}
 	totalDiurnas = parseFloat(totalDiurnas.toFixed(1));
 	totalNocturnas = parseFloat(totalNocturnas.toFixed(1));
@@ -226,15 +254,13 @@ function calcular() {
 	document.getElementById("spanCobroDiaFerDom").textContent = formato.format(Math.round(cobroDiaFerDom));
 	document.getElementById("spanCobroNocheFerDom").textContent = formato.format(Math.round(cobroNocheFerDom));
 	document.getElementById("spanDescIPS").textContent = formato.format(Math.round(descIPS));
-	document.getElementById("spanCantDiaLibre").textContent = cantDiaLibre;
+	document.getElementById("spandiasLibres").textContent = diasLibres;
 	document.getElementById("spanTotalBruto").textContent = formato.format(Math.round(totalBruto));
 	document.getElementById("spanTotalNeto").textContent = formato.format(Math.round(total));
 	btnSave.disabled = false;
 	//control de datos en consola
-	console.log("Total horas diurnas:", totalDiurnas);
-	console.log("Total horas nocturnas:", totalNocturnas);
-	console.log("Total horas diurnas Fer/Dom:", totalDFerdom);
-	console.log("Total horas nocturnas Fer/Dom:", totalNFerdom);
+	console.log("Diurnas: ", horasDiurnas);
+	console.log("Nocturnas: ", horasNocturnas);
 }
 
 function reiniciar() {
@@ -309,28 +335,9 @@ document.getElementById("importarJson").addEventListener("change", function (eve
 	reader.readAsText(file);
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-	function validarInputRango(clase, min, max) {
-		document.querySelectorAll(`.${clase}`).forEach(input => {
-			input.addEventListener("input", () => {
-				let val = parseInt(input.value);
-				if (isNaN(val)) return;
-
-				if (val < min) input.value = min;
-				else if (val > max) input.value = max;
-			});
-			// Opcional: rellenar con 0 a la izquierda si es menor a 10
-			input.addEventListener("blur", () => {
-				let val = parseInt(input.value);
-				if (!isNaN(val)) {
-					input.value = val.toString().padStart(2, '0');
-				}
-			});
-		});
-	}
-	// Aplica la función a cada clase con su rango
-	validarInputRango("inputHE", 0, 23);
-	validarInputRango("inputHS", 0, 23);
-	validarInputRango("inputME", 0, 59);
-	validarInputRango("inputMS", 0, 59);
-});
+function Export() {
+	const worksheet = XLSX.utils.json_to_sheet(horasExcel);
+	const workbook = XLSX.utils.book_new();
+	XLSX.utils.book_append_sheet(workbook, worksheet, "Horas");
+	XLSX.writeFile(workbook, "Horas.xlsx")
+}
