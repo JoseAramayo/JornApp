@@ -54,7 +54,6 @@ h4 {
 
 .containerButtons {
 	display: flex;
-
 	align-items:center;
 	margin: 1%;
 	padding: 1%;
@@ -94,11 +93,10 @@ button {
 .btnExport {
 	opacity: 100%;
 	transition: 0.2s;
-	border: 1px solid gray;
+	border: 1px solid #E8E8E8;
 	box-shadow: none;
 	border-radius: 5px;
-	box-shadow: 1px 1px 1px gray;
-	background-color: #FDFDFD;
+	background-color: #F9F9F9;
 }
 
 .btnCalcular:hover,
@@ -106,7 +104,7 @@ button {
 .btnPrint:hover,
 .btnSave:hover,
 .btnExport:hover {
-	background-color: #E8E8E8;
+	background-color: #F1F1F1;
 	box-shadow: none;
 }
 
@@ -184,6 +182,10 @@ footer {
 	animation: fadeUp .6s ease-out forwards;
 }
 
+input {
+	border:1px solid #E1E1E1;
+}
+
 .divRow,
 .referenceTable {
 	display: flex;
@@ -211,7 +213,7 @@ footer {
 .inputHS,
 .inputMS {
 	width: 100%;
-	border: 1px solid none;
+	border-radius: 3px;
 }
 
 .checkBoxFerDom {
@@ -253,6 +255,8 @@ input,
 
 hr {
 	margin: 10px;
+	border-style: solid;
+	border-color: #E8E8E8;
 }
 
 nav {
