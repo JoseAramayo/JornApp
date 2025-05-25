@@ -1,3 +1,9 @@
+// Glorario
+// -Pendiente
+//
+let version = "2.2.2";
+document.getElementById('spanAppVersion').textContent = version;
+
 let formato = new Intl.NumberFormat('es-PY', { // dar formato de guaranies
 	style: 'currency',
 	currency: 'PYG',
@@ -100,7 +106,7 @@ document.getElementById("selectMes").addEventListener("change", function () {
 
 let horaEntrada, minutoEntrada, horaSalida, minutoSalida,
 	horasDiurnas, horasNocturnas, checkBoxFerDom, totalDiurnas,
-	totalNocturnas, totalDFerdom, totalNFerdom, diasLibres, horasExcel;
+	totalNocturnas, totalDFerdom, totalNFerdom, diasLibres;
 
 function calcular() {
 	diasEnMes = new Date(anio, mes + 1, 0).getDate(); // Cantidad de días en el mes actual
@@ -117,7 +123,6 @@ function calcular() {
 	totalDFerdom = 0;
 	totalNFerdom = 0;
 	diasLibres = 0;
-	horasExcel = [];
 
 	for (let i = 0; i < diasEnMes; i++) {
 		let c = i + 1; //
@@ -149,10 +154,12 @@ function calcular() {
 		//Calculo de horas diurnas, nocturnas, Dia/Noche FerDom.
 		if (checkbox && checkbox.checked) {
 			checkBoxFerDom[i] = c;
-			// console.log("cumple condicion");
+			// console.log("checkbox.checked = true");
 			if (horaEntrada[i] == 0 && horaSalida[i] == 0) {
 				// console.log("Dia libre");
 				diasLibres += 1;
+				horasDiurnas[i] = 0;
+				horasNocturnas[i] = 0;
 			} else {
 				if (horaSalida[i] === 0) {
 					horaSalida[i] = 24;
@@ -163,6 +170,8 @@ function calcular() {
 						// console.log("Salida diurna")
 						horasDiurnas[i] = horaSalida[i] - horaEntrada[i];
 						totalDFerdom += horasDiurnas[i];
+						//PRUEBA
+						horasNocturnas[i] = 0;
 					} else {
 						// console.log("Salida nocturna")
 						horasDiurnas[i] = 20 - horaEntrada[i];
@@ -174,6 +183,8 @@ function calcular() {
 					// console.log("Entrada y salida nocturna ");
 					horasNocturnas[i] = horaSalida[i] - horaEntrada[i];
 					totalNFerdom += horasNocturnas[i];
+					//PRUEBA
+					horasDiurnas[i] = 0;
 				} else if (horaEntrada[i] >= 0 && horaEntrada[i] < 6) {
 					if (horaSalida[i] === 24) {
 						horaSalida[i] = 0;
@@ -181,6 +192,8 @@ function calcular() {
 					if (horaSalida[i] <= 6) {
 						horasNocturnas[i] = horaSalida[i] - horaEntrada[i];
 						totalNFerdom += horasNocturnas[i];
+						//PRUEBA
+						horasDiurnas[i] = 0;
 					} else {
 						horasNocturnas[i] = 6 - horaEntrada[i];
 						horasDiurnas[i] = horaSalida[i] - 6;
@@ -194,6 +207,8 @@ function calcular() {
 			if (horaEntrada[i] == 0 && horaSalida[i] == 0) {
 				// console.log("Dia libre");
 				diasLibres += 1;
+				horasDiurnas[i] = 0;
+				horasNocturnas[i] = 0;
 			} else {
 				if (horaSalida[i] === 0) {
 					horaSalida[i] = 24;
@@ -204,6 +219,8 @@ function calcular() {
 						// console.log("Salida diurna")
 						horasDiurnas[i] = horaSalida[i] - horaEntrada[i];
 						totalDiurnas += horasDiurnas[i];
+						//PRUEBA
+						horasNocturnas[i] = 0;
 					} else {
 						// console.log("Salida nocturna")
 						horasDiurnas[i] = 20 - horaEntrada[i];
@@ -215,6 +232,8 @@ function calcular() {
 					// console.log("Entrada y salida nocturna ");
 					horasNocturnas[i] = horaSalida[i] - horaEntrada[i];
 					totalNocturnas += horasNocturnas[i];
+					//PRUEBA
+					horasDiurnas[i] = 0;
 				} else if (horaEntrada[i] >= 0 && horaEntrada[i] < 6) {
 					if (horaSalida[i] === 24) {
 						horaSalida[i] = 0;
@@ -222,6 +241,8 @@ function calcular() {
 					if (horaSalida[i] <= 6) {
 						horasNocturnas[i] = horaSalida[i] - horaEntrada[i];
 						totalNocturnas += horasNocturnas[i];
+						//PRUEBA
+						horasDiurnas[i] = 0;
 					} else {
 						horasNocturnas[i] = 6 - horaEntrada[i];
 						horasDiurnas[i] = horaSalida[i] - 6;
@@ -231,8 +252,6 @@ function calcular() {
 				}
 			}
 		}
-		horasExcel.push(horasDiurnas[i]);
-		horasExcel.push(horasNocturnas[i]);
 	}
 	totalDiurnas = parseFloat(totalDiurnas.toFixed(1));
 	totalNocturnas = parseFloat(totalNocturnas.toFixed(1));
@@ -257,10 +276,9 @@ function calcular() {
 	document.getElementById("spandiasLibres").textContent = diasLibres;
 	document.getElementById("spanTotalBruto").textContent = formato.format(Math.round(totalBruto));
 	document.getElementById("spanTotalNeto").textContent = formato.format(Math.round(total));
-	btnSave.disabled = false;
 	//control de datos en consola
-	console.log("Diurnas: ", horasDiurnas);
-	console.log("Nocturnas: ", horasNocturnas);
+	// console.log("horas dia:", horasDiurnas)
+	// console.log("horas noche:", horasNocturnas)
 }
 
 function reiniciar() {
@@ -268,18 +286,14 @@ function reiniciar() {
 }
 
 function imprimir() {
-	let name = '';
-	while (!name) {
-		name = prompt('Ingresa tu nombre y apellido, por favor.')
-		name = name.trim().replace(/\s+/g, '_');
-	}
 	const originTitle = document.title
-	document.title = `JornApp_${meses[mes]}_${name}.`;
+	document.title = `JornApp_${meses[mes]}_${anio}.`;
 	window.print();
 	document.title = originTitle;
 }
 
 function guardar() {
+	calcular();
 	const datos = {
 		horaEntrada: horaEntrada,
 		horaSalida: horaSalida,
@@ -292,8 +306,34 @@ function guardar() {
 	link.download = `${meses[mes]}_${anio}_horas.json`;
 	link.click();
 	URL.revokeObjectURL(link.href);
-	btnSave.disabled = true;
 }
+
+function Export() {
+	calcular();
+	let name = '';
+	while (!name) {
+		name = prompt('Ingresa tu nombre y apellido, por favor.')
+		name = name.trim().replace(/\s+/g, '_');
+	}
+	const horasExcel = [] 
+	for (let i=0; i<diasEnMes; i++){
+		horasExcel.push(horasDiurnas[i])
+		horasExcel.push(horasNocturnas[i])
+	}
+	const datos = {
+		horasTrabajadas: horasExcel
+	};
+	const matriz = [horasExcel]
+	const worksheet = XLSX.utils.aoa_to_sheet(matriz);
+	const workbook = XLSX.utils.book_new();
+	XLSX.utils.book_append_sheet(workbook, worksheet, `Horas_de_${meses[mes]}_${anio}`);
+	XLSX.writeFile(workbook, `${name}_horas_${meses[mes]}_${anio}.xlsx`);
+	//control de datos en consola
+	// console.log("horasDiurnas: ", horasDiurnas)
+	// console.log("horasNocturnas: ", horasNocturnas)
+	// console.log("horas para Excel: ",horasExcel)
+}
+
 
 document.getElementById("importarJson").addEventListener("change", function (event) {
 	const file = event.target.files[0];
@@ -334,10 +374,3 @@ document.getElementById("importarJson").addEventListener("change", function (eve
 	};
 	reader.readAsText(file);
 });
-
-function Export() {
-	const worksheet = XLSX.utils.json_to_sheet(horasExcel);
-	const workbook = XLSX.utils.book_new();
-	XLSX.utils.book_append_sheet(workbook, worksheet, "Horas");
-	XLSX.writeFile(workbook, "Horas.xlsx")
-}
