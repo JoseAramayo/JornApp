@@ -25,45 +25,47 @@
         </div>
     </nav>
     <div class="containerTitle">
-        <h1>Instructivo de uso</h1>
+        <h1>Instrucciones</h1>
     </div>
     <div class="divGuia">
-        <p>Esta es una guía para utilizar la herramienta. A continuación te dejo los detalles a tener en cuenta:
-        <p>
-            <br>
+        <h4>Guía para utilizar la herramienta. Favor tener en cuenta los siguientes puntos:</h4>
         <ul>
             <li><b>Formato:</b> 24 horas.</li>
-            <li><b>Días libres:</b> no rellenar casillas.</li>
-            <li><b>Feriados:</b> selecciona manualmente.</li>
-            <li><b>Domingos:</b> Se detectan automáticamente.</li>
-            <li>Logueos antes y deslogueos posterior a las 00:00 H, no se cargan en la misma fila.</li>
-            <li>Las horas de Salida no deben ser menor a las de Entrada.</li>
-            <li><b>Imprimir:</b> guardar como PDF, desplegar "Más opciones de configuración", tamaño de hoja "Tabloide"
-                para un formato legible.</li>
-            <li><b>Guardar:</b> se habilita luego de pulsar "Calcular" y descarga un archivo "Horas_de_mes_año".</li>
-            <li><b>Importar horas:</b> presiona "Seleccionar archivo", busca el archivo descargado "Horas_de_mes_año".
+            <li><b>Días libres:</b> No rellenar casillas.</li>
+            <li><b>Feriados:</b> Tíldalo manualmente.</li>
+            <li><b>Domingos:</b> Se tildan automáticamente.</li>
+            <li>Si tu logueo pasa las 00:00, carga tu hora de salida en la fila que corresponde.</li>
+            <li>Las horas de salida no deben ser menor a las de entrada.</li>
+            <li><b>Imprimir:</b> Descarga un PDF, despliega <b>"Más opciones de configuración"</b> y elije tamaño
+                <b>"Tabloide"</b>
+                para un formato legible.
             </li>
-            <li>Cambia el mes en el título para calcular tu salario de una fecha diferente al actual.</li>
+            <li><b>Guardar:</b> Descarga un archivo "Horas_de_MES_AÑO" con las horas y días tildados, se usa para
+                importar.</li>
+            <li><b>Importar horas:</b> Importa las horas del archivo "Horas_de_MES_AÑO".</li>
+            <li><b>Exportar (BETA):</b> Genera un Excel con las horas diurnas y nocturnas.</li>
         </ul>
     </div>
 
     <footer>
         <div class="column">
-            <p>Volver a:</p>
+            <p><b>Volver a:</b></p>
             <a href="index.html">Inicio</a>
 
         </div>
         <hr>
         <div class="column">
-            <p>Versión:</p>
-			<p>2.1.1</p>
+            <p><b>Versión:</p></b>
+            <p><span id="spanAppVersion">AppVersion</span></p>
         </div>
         <hr>
         <div class="column">
-            <p>Desarrollado por:</p>
+			<p><b>Desarrollado por:</b></p>
             <address>José Aramayo</address>
         </div>
     </footer>
+    <script src="/js/script.js">
+    </script>
 </body>
 
 </html>
