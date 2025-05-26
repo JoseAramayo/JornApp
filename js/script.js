@@ -1,7 +1,13 @@
 // Glorario
 // -Pendiente
 //
-let version = "2.2.2";
+
+//Definir variables/arrays globales
+let horaEntrada, minutoEntrada, horaSalida, minutoSalida,
+	horasDiurnas, horasNocturnas, checkBoxFerDom, totalDiurnas,
+	totalNocturnas, totalDFerdom, totalNFerdom, diasLibres, arrayDayOfTheWeek, totalDays;
+
+let version = "2.2.3";
 document.getElementById('spanAppVersion').textContent = version;
 
 let formato = new Intl.NumberFormat('es-PY', { // dar formato de guaranies
@@ -19,13 +25,25 @@ document.getElementById("spanJornalDiurno").textContent = formato.format(jornal[
 document.getElementById("spanJornalNocturno").textContent = formato.format(jornal[1]);
 document.getElementById("spanDiaFerDom").textContent = formato.format(jornal[2]);
 document.getElementById("spanNocheFerDom").textContent = formato.format(jornal[3]);
-let diasEnMes;
 
-function generarTabla(mesSeleccionado) {
+
+let diasEnMes;
+//diasEnMes = new Date(anio, mes + 1, 0).getDate(); // Cantidad de días en el mes actual
+
+function generarTabla() {
+	arrayDayOfTheWeek = [];
+	totalDays = [];
 	diasEnMes = new Date(anio, mes + 1, 0).getDate(); // Cantidad de días en el mes actual
 	for (let dia = 1; dia <= diasEnMes; dia++) {
 		const fecha = new Date(anio, mes, dia);
 		const diaSemana = fecha.toLocaleDateString("es-ES", { weekday: "long" });
+
+		//pruebas
+		arrayDayOfTheWeek.push(diaSemana);
+		arrayDayOfTheWeek.push("-");
+		totalDays.push(dia);
+		totalDays.push("-")
+
 		const fechaFormateada = fecha.toLocaleDateString("es-ES");
 		const divRow = document.createElement("div");
 		divRow.classList.add("divRow");
@@ -103,10 +121,6 @@ document.getElementById("selectMes").addEventListener("change", function () {
 	generarTabla(mes);
 	calcular();
 });
-
-let horaEntrada, minutoEntrada, horaSalida, minutoSalida,
-	horasDiurnas, horasNocturnas, checkBoxFerDom, totalDiurnas,
-	totalNocturnas, totalDFerdom, totalNFerdom, diasLibres;
 
 function calcular() {
 	diasEnMes = new Date(anio, mes + 1, 0).getDate(); // Cantidad de días en el mes actual
@@ -315,19 +329,33 @@ function Export() {
 		name = prompt('Ingresa tu nombre y apellido, por favor.')
 		name = name.trim().replace(/\s+/g, '_');
 	}
-	const horasExcel = [] 
-	for (let i=0; i<diasEnMes; i++){
+	const horasExcel = [];
+	const tags = [];
+	for (let i = 0; i < diasEnMes; i++) {
+		tags.push("D");
+		tags.push("N");
 		horasExcel.push(horasDiurnas[i])
 		horasExcel.push(horasNocturnas[i])
 	}
-	const datos = {
-		horasTrabajadas: horasExcel
-	};
-	const matriz = [horasExcel]
+
+	const matriz = [totalDays, arrayDayOfTheWeek, tags, horasExcel]
 	const worksheet = XLSX.utils.aoa_to_sheet(matriz);
+
+	worksheet['!merges'] = [];
+	for (let i = 0; i < arrayDayOfTheWeek.length; i++) {
+		worksheet['!merges'].push({
+			s: { r: 1, c: i * 2 },
+			e: { r: 1, c: i * 2 + 1 }
+		});
+		worksheet['!merges'].push({
+			s: { r: 0, c: i * 2 },
+			e: { r: 0, c: i * 2 + 1 }
+		});
+	};
+
 	const workbook = XLSX.utils.book_new();
-	XLSX.utils.book_append_sheet(workbook, worksheet, `Horas_de_${meses[mes]}_${anio}`);
-	XLSX.writeFile(workbook, `${name}_horas_${meses[mes]}_${anio}.xlsx`);
+	XLSX.utils.book_append_sheet(workbook, worksheet, `Horas_${meses[mes]}_${anio}`);
+	XLSX.writeFile(workbook, `JornApp_Horas_${meses[mes]}_${anio}_${name}.xlsx`);
 	//control de datos en consola
 	// console.log("horasDiurnas: ", horasDiurnas)
 	// console.log("horasNocturnas: ", horasNocturnas)
@@ -368,9 +396,10 @@ document.getElementById("importarJson").addEventListener("change", function (eve
 			calcular();
 			alert("Datos importados correctamente.");
 		} catch (error) {
-			console.error("Error al leer el archivo JSON:", error);
+			console.error("Error al leer archivo JSON:", error);
 			alert("El archivo no tiene un formato válido.");
 		}
 	};
 	reader.readAsText(file);
 });
+//console.log("dias de la semana: ", arrayDayOfTheWeek)
