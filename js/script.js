@@ -1,44 +1,36 @@
-// Glorario
-// -Pendiente
-//
-
-//Definir variables/arrays globales
 let horaEntrada, minutoEntrada, horaSalida, minutoSalida,
 	horasDiurnas, horasNocturnas, checkBoxFerDom, totalDiurnas,
-	totalNocturnas, totalDFerdom, totalNFerdom, diasLibres, arrayDayOfTheWeek, totalDays;
+	totalNocturnas, totalDFerdom, totalNFerdom, diasLibres, arrayDayOfTheWeek, totalDays, diasEnMes;
 
-let version = "2.2.3";
+let version = "2.3.2";
 document.getElementById('spanAppVersion').textContent = version;
 
-let formato = new Intl.NumberFormat('es-PY', { // dar formato de guaranies
+let formato = new Intl.NumberFormat('es-PY', {
 	style: 'currency',
 	currency: 'PYG',
 });
+
 const form = document.querySelector("form");
 const fechaActual = new Date();
 const anio = fechaActual.getFullYear();
 document.getElementById("selectMes").value = fechaActual.getMonth();
 var mes = parseInt(document.getElementById("selectMes").value);
 let meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
-let jornal = [13453, 17489, 26906, 34978] //jornales x hora
+let jornal = [13453, 17489, 26906, 34978]
+
 document.getElementById("spanJornalDiurno").textContent = formato.format(jornal[0]);
 document.getElementById("spanJornalNocturno").textContent = formato.format(jornal[1]);
 document.getElementById("spanDiaFerDom").textContent = formato.format(jornal[2]);
 document.getElementById("spanNocheFerDom").textContent = formato.format(jornal[3]);
 
-
-let diasEnMes;
-//diasEnMes = new Date(anio, mes + 1, 0).getDate(); // Cantidad de días en el mes actual
-
 function generarTabla() {
 	arrayDayOfTheWeek = [];
 	totalDays = [];
-	diasEnMes = new Date(anio, mes + 1, 0).getDate(); // Cantidad de días en el mes actual
+	diasEnMes = new Date(anio, mes + 1, 0).getDate();
 	for (let dia = 1; dia <= diasEnMes; dia++) {
 		const fecha = new Date(anio, mes, dia);
 		const diaSemana = fecha.toLocaleDateString("es-ES", { weekday: "long" });
 
-		//pruebas
 		arrayDayOfTheWeek.push(diaSemana);
 		arrayDayOfTheWeek.push("-");
 		totalDays.push(dia);
@@ -78,7 +70,6 @@ function generarTabla() {
 					</div>
 				</div>`;
 		form.appendChild(divRow);
-		//deshabilitar checkbox si es domingo
 		if (diaSemana === "domingo") {
 			const checkboxDom = document.getElementById(`checkBoxId${dia}`);
 			checkboxDom.checked = true;
@@ -94,7 +85,6 @@ function generarTabla() {
 				if (val < min) input.value = min;
 				else if (val > max) input.value = max;
 			});
-			// Opcional: rellenar con 0 a la izquierda si es menor a 10
 			input.addEventListener("blur", () => {
 				let val = parseInt(input.value);
 				if (!isNaN(val)) {
@@ -103,7 +93,6 @@ function generarTabla() {
 			});
 		});
 	}
-	// Aplica la función a cada clase con su rango
 	validarInputRango("inputHE", 0, 23);
 	validarInputRango("inputHS", 0, 23);
 	validarInputRango("inputME", 0, 59);
@@ -123,7 +112,7 @@ document.getElementById("selectMes").addEventListener("change", function () {
 });
 
 function calcular() {
-	diasEnMes = new Date(anio, mes + 1, 0).getDate(); // Cantidad de días en el mes actual
+	diasEnMes = new Date(anio, mes + 1, 0).getDate();
 
 	horaEntrada = [];
 	minutoEntrada = [];
@@ -139,9 +128,8 @@ function calcular() {
 	diasLibres = 0;
 
 	for (let i = 0; i < diasEnMes; i++) {
-		let c = i + 1; //
+		let c = i + 1;
 
-		//Guardar datos en arreglos
 		let inputHE = document.getElementById(`HE${c}`);
 		let inputME = document.getElementById(`ME${c}`);
 		let inputHS = document.getElementById(`HS${c}`);
@@ -157,7 +145,6 @@ function calcular() {
 			minutoSalida.push(minuSa);
 		}
 
-		//Minutos a horas (decimal)
 		minutoEntrada[i] /= 60;
 		minutoSalida[i] /= 60;
 		horaEntrada[i] += parseFloat(minutoEntrada[i].toFixed(2));
@@ -165,12 +152,9 @@ function calcular() {
 
 		let checkbox = document.getElementById(`checkBoxId${c}`);
 
-		//Calculo de horas diurnas, nocturnas, Dia/Noche FerDom.
 		if (checkbox && checkbox.checked) {
 			checkBoxFerDom[i] = c;
-			// console.log("checkbox.checked = true");
 			if (horaEntrada[i] == 0 && horaSalida[i] == 0) {
-				// console.log("Dia libre");
 				diasLibres += 1;
 				horasDiurnas[i] = 0;
 				horasNocturnas[i] = 0;
@@ -178,26 +162,24 @@ function calcular() {
 				if (horaSalida[i] === 0) {
 					horaSalida[i] = 24;
 				}
+				if (horaSalida[i] < horaEntrada[i]) {
+					alert("La hora de salida no puede ser menor a la de entrada, intenta otra vez.")
+					break;
+				}
 				if (horaEntrada[i] >= 6 && horaEntrada[i] < 20) {
-					// console.log("Entrada diurna")
 					if (horaSalida[i] <= 20) {
-						// console.log("Salida diurna")
 						horasDiurnas[i] = horaSalida[i] - horaEntrada[i];
 						totalDFerdom += horasDiurnas[i];
-						//PRUEBA
 						horasNocturnas[i] = 0;
 					} else {
-						// console.log("Salida nocturna")
 						horasDiurnas[i] = 20 - horaEntrada[i];
 						horasNocturnas[i] = horaSalida[i] - 20;
 						totalDFerdom += horasDiurnas[i];
 						totalNFerdom += horasNocturnas[i];
 					}
 				} else if ((horaEntrada[i] >= 20 && horaEntrada[i] < 24)) {
-					// console.log("Entrada y salida nocturna ");
 					horasNocturnas[i] = horaSalida[i] - horaEntrada[i];
 					totalNFerdom += horasNocturnas[i];
-					//PRUEBA
 					horasDiurnas[i] = 0;
 				} else if (horaEntrada[i] >= 0 && horaEntrada[i] < 6) {
 					if (horaSalida[i] === 24) {
@@ -206,7 +188,6 @@ function calcular() {
 					if (horaSalida[i] <= 6) {
 						horasNocturnas[i] = horaSalida[i] - horaEntrada[i];
 						totalNFerdom += horasNocturnas[i];
-						//PRUEBA
 						horasDiurnas[i] = 0;
 					} else {
 						horasNocturnas[i] = 6 - horaEntrada[i];
@@ -219,7 +200,6 @@ function calcular() {
 		} else {
 			checkBoxFerDom[i] = 0;
 			if (horaEntrada[i] == 0 && horaSalida[i] == 0) {
-				// console.log("Dia libre");
 				diasLibres += 1;
 				horasDiurnas[i] = 0;
 				horasNocturnas[i] = 0;
@@ -227,26 +207,26 @@ function calcular() {
 				if (horaSalida[i] === 0) {
 					horaSalida[i] = 24;
 				}
+				if (horaSalida[i] < horaEntrada[i]) {
+					alert("La hora de salida no puede ser menor a la de entrada, intenta otra vez.")
+					break;
+				}
 				if (horaEntrada[i] >= 6 && horaEntrada[i] < 20) {
-					// console.log("Entrada diurna")
 					if (horaSalida[i] <= 20) {
-						// console.log("Salida diurna")
 						horasDiurnas[i] = horaSalida[i] - horaEntrada[i];
 						totalDiurnas += horasDiurnas[i];
-						//PRUEBA
+
 						horasNocturnas[i] = 0;
 					} else {
-						// console.log("Salida nocturna")
 						horasDiurnas[i] = 20 - horaEntrada[i];
 						horasNocturnas[i] = horaSalida[i] - 20;
 						totalDiurnas += horasDiurnas[i];
 						totalNocturnas += horasNocturnas[i];
 					}
 				} else if ((horaEntrada[i] >= 20 && horaEntrada[i] < 24)) {
-					// console.log("Entrada y salida nocturna ");
 					horasNocturnas[i] = horaSalida[i] - horaEntrada[i];
 					totalNocturnas += horasNocturnas[i];
-					//PRUEBA
+
 					horasDiurnas[i] = 0;
 				} else if (horaEntrada[i] >= 0 && horaEntrada[i] < 6) {
 					if (horaSalida[i] === 24) {
@@ -255,7 +235,6 @@ function calcular() {
 					if (horaSalida[i] <= 6) {
 						horasNocturnas[i] = horaSalida[i] - horaEntrada[i];
 						totalNocturnas += horasNocturnas[i];
-						//PRUEBA
 						horasDiurnas[i] = 0;
 					} else {
 						horasNocturnas[i] = 6 - horaEntrada[i];
@@ -290,9 +269,6 @@ function calcular() {
 	document.getElementById("spandiasLibres").textContent = diasLibres;
 	document.getElementById("spanTotalBruto").textContent = formato.format(Math.round(totalBruto));
 	document.getElementById("spanTotalNeto").textContent = formato.format(Math.round(total));
-	//control de datos en consola
-	// console.log("horas dia:", horasDiurnas)
-	// console.log("horas noche:", horasNocturnas)
 }
 
 function reiniciar() {
@@ -352,16 +328,10 @@ function Export() {
 			e: { r: 0, c: i * 2 + 1 }
 		});
 	};
-
 	const workbook = XLSX.utils.book_new();
 	XLSX.utils.book_append_sheet(workbook, worksheet, `Horas_${meses[mes]}_${anio}`);
 	XLSX.writeFile(workbook, `JornApp_Horas_${meses[mes]}_${anio}_${name}.xlsx`);
-	//control de datos en consola
-	// console.log("horasDiurnas: ", horasDiurnas)
-	// console.log("horasNocturnas: ", horasNocturnas)
-	// console.log("horas para Excel: ",horasExcel)
 }
-
 
 document.getElementById("importarJson").addEventListener("change", function (event) {
 	const file = event.target.files[0];
@@ -371,10 +341,8 @@ document.getElementById("importarJson").addEventListener("change", function (eve
 		try {
 			const contenido = e.target.result;
 			const datos = JSON.parse(contenido);
-			// Cargar valores en los campos del formulario
 			for (let i = 0; i < datos.horaEntrada.length; i++) {
 				const c = i + 1;
-				// Separar horas y minutos
 				const entrada = datos.horaEntrada[i];
 				const salida = datos.horaSalida[i];
 				const horaE = Math.floor(entrada);
@@ -385,7 +353,6 @@ document.getElementById("importarJson").addEventListener("change", function (eve
 				document.getElementById(`ME${c}`).value = minutoE.toString().padStart(2, "0");
 				document.getElementById(`HS${c}`).value = horaS === 24 ? "00" : horaS.toString().padStart(2, "0");
 				document.getElementById(`MS${c}`).value = minutoS.toString().padStart(2, "0");
-				// Activar checkbox si estaba marcado
 				const check = document.getElementById(`checkBoxId${c}`);
 				if (datos.checkBoxFerDom[i] !== 0 && check) {
 					check.checked = true;
@@ -402,4 +369,3 @@ document.getElementById("importarJson").addEventListener("change", function (eve
 	};
 	reader.readAsText(file);
 });
-//console.log("dias de la semana: ", arrayDayOfTheWeek)
