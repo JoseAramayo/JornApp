@@ -1,0 +1,198 @@
+<html lang="es-ES">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <title>JornApp - Inicio</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+
+<body>
+    <nav>
+        <span>JornApp | </span>
+        <div>
+            <ul class="ulNAv">
+                <li class="liNav">
+                    <a href="index.html">🏠︎ Inicio</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="containerTitle">
+        <h1>Calcular horas de </h1>
+        <select id="selectMes">
+            <option value="0">Enero</option>
+            <option value="1">Febrero</option>
+            <option value="2">Marzo</option>
+            <option value="3">Abril</option>
+            <option value="4">Mayo</option>
+            <option value="5">Junio</option>
+            <option value="6">Julio</option>
+            <option value="7">Agosto</option>
+            <option value="8">Septiembre</option>
+            <option value="9">Octubre</option>
+            <option value="10">Noviembre</option>
+            <option value="11">Diciembre</option>
+        </select>
+    </div>
+    <main>
+        <div class="formContainer">
+            <div class="divTitulos">
+                <div class="container">
+                    <h3 title="Feriado/Domingo">Fer/Dom</h3>
+                </div>
+                <div class="container">
+                    <h3>Día</h3>
+                </div>
+                <div class="container">
+                    <h3>Fecha</h3>
+                </div>
+                <div class="container">
+                    <h3>Entrada</h3>
+                </div>
+                <div class="container">
+                    <h3>Salida</h3>
+                </div>
+            </div>
+            <form>
+            </form>
+        </div>
+        <div class="containerTable">
+            <div class="referenceTable">
+                <div class="column">
+                    <h4>Diurno</h4>
+                    <div class="containerSpan"> <span id="spanJornalDiurno">JornalDiaHora</span></div>
+
+                    <hr class="hrInvisible">
+
+                    <h4>Nocturno</h4>
+                    <div class="containerSpan"> <span id="spanJornalNocturno">JornalNochehora</span></div>
+
+                    <hr class="hrInvisible">
+
+                    <h4 title="Diurnas Feriado/Domingo">Diur. F/D</h4>
+                    <div class="containerSpan"> <span id="spanDiaFerDom">Dia Fer/Dom</span> </div>
+
+                    <hr class="hrInvisible">
+
+                    <h4 title="Nocturnas Feriado/Domingo">Noct. F/D</h4>
+                    <div class="containerSpan"> <span id="spanNocheFerDom">Noche Fer/Dom</span> </div>
+                </div>
+                <hr>
+                <div class="column">
+                    <h4>Horas</h4>
+                    <div class="containerSpan"> <span id="spanTotalDiurnas">--</span></div>
+
+                    <hr class="hrInvisible">
+
+                    <h4>''</h4>
+                    <div class="containerSpan"> <span id="spanTotalNocturnas">--</span></div>
+
+                    <hr class="hrInvisible">
+
+                    <h4>''</h4>
+                    <div class="containerSpan"> <span id="spanTotalDFerDom">--</span> </div>
+
+                    <hr class="hrInvisible">
+
+                    <h4>''</h4>
+                    <div class="containerSpan"> <span id="spanTotalNFerDom">--</span> </div>
+                </div>
+                <hr>
+                <div class="column">
+                    <h4>Total</h4>
+                    <div class="containerSpan"> <span id="spanCobroDiurnas">--</span> </div>
+
+                    <hr class="hrInvisible">
+
+                    <h4>''</h4>
+                    <div class="containerSpan"> <span id="spanCobroNocturnas">--</span> </div>
+
+                    <hr class="hrInvisible">
+
+                    <h4>''</h4>
+                    <div class="containerSpan"> <span id="spanCobroDiaFerDom">--</span> </div>
+
+                    <hr class="hrInvisible">
+
+                    <h4>''</h4>
+                    <div class="containerSpan"> <span id="spanCobroNocheFerDom">--</span> </div>
+                </div>
+                <hr>
+                <div class="column">
+                    <h4>IPS</h4>
+                    <div class="containerSpan"> <span id="spanDescIPS">--</span> </div>
+
+                    <hr class="hrInvisible">
+
+                    <h4>Días libres</h4>
+                    <div class="containerSpan"> <span id="spandiasLibres">--</span> </div>
+
+                    <hr class="hrInvisible">
+                    <h4>Total bruto</h4>
+                    <div class="containerSpan"> <span id="spanTotalBruto">--</span> </div>
+
+                    <hr class="hrInvisible">
+
+                    <h4>Total neto</h4>
+                    <div class="containerSpan"> <span id="spanTotalNeto">--</span> </div>
+                </div>
+            </div>
+            <div class="containerDivs">
+                <div class="containerButtons">
+                    <button class="btnCalcular" onclick="calcular()">Calcula ✅</button>
+                    <button class="btnRefresh" onclick="reiniciar()">Reinicia 🔄</button>
+                    <button class="btnPrint" onclick="imprimir()" id="btnPrint">PDF 🖨️</button>
+                    <button class="btnSave" onclick="guardar()" id="btnSave">Guarda 💾</button>
+                    <button class="btnExport" onclick="Export()" id="btnExport">Excel 📈</button>
+                </div>
+                <hr>
+                <div class="containerImport">
+                    <p>Importar horas: </p>
+                    <input type="file" id="importarJson" accept=".json">
+                </div>
+            </div>
+            <div class="divGuia">
+                <h4 class="Desplegable" onclick="toggleContenido()" title="Click para más información!">Instrucciones
+                </h4>
+                <div class="contenido" id="contenido">
+                    <ul>
+                        <li><b>Formato:</b> 24 horas.</li>
+                        <li><b>¿Cómo cargar datos?:</b> Ingresa tu hora de Entrada y Salida.</li>
+                        <li><b>Días libres:</b> No rellenar casillas de Entrada y Salida.</li>
+                        <li><b>Feriados:</b> Tíldalos manualmente.</li>
+                        <li><b>Domingos:</b> Se tildan automáticamente.</li>
+                        <li><b>PDF:</b> Descarga un Print de toda la pantalla.</li>
+                        <li><b>Guarda:</b> Descarga un archivo "Horas_de_MES_AÑO".</li>
+                        <li><b>Importar horas:</b> Cargará los datos del archivo "Horas_de_MES_AÑO".</li>
+                        <li><b>Excel:</b> Descarga un Excel con las horas diurnas y nocturnas de cada día para
+                            compartirlo a tu supervisor.</li>
+                        <li><b>Fer/Dom:</b> Feriado/Domingo</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <div class="column">
+            <p><b>Desarrollado por:</b></p>
+            <address>José Aramayo</address>
+        </div>
+        <hr>
+        <div class="column">
+            <p><b>Versión:</p></b>
+            <p><span id="spanAppVersion">AppVersion</span></p>
+        </div>
+        <hr>
+        <div class="column">
+            <p><b>JornApp:</p></b>
+            <p>Agilizá el cálculo de tus horas.</p>
+        </div>
+    </footer>
+    <script src="js/script.js"></script>
+</body>
+
+</html>
