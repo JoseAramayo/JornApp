@@ -39,26 +39,19 @@
         </select>
     </div>
     <main>
-        <div class="formContainer">
-            <div class="divTitulos">
-                <div class="container">
-                    <h3 title="Feriado/Domingo">Fer/Dom</h3>
+
+           <div class="formContainer">
+                <div class="container-select-metodo">
+                    <select id="select-metodo">
+                        <option value="1" selected disabled>--Selecciona--</option>
+                        <option value="2">Hora de Entrada/Salida</option>
+                        <option value="3">Horas Trabajadas</option>
+                    </select>
                 </div>
-                <div class="container">
-                    <h3>Día</h3>
-                </div>
-                <div class="container">
-                    <h3>Fecha</h3>
-                </div>
-                <div class="container">
-                    <h3>Entrada</h3>
-                </div>
-                <div class="container">
-                    <h3>Salida</h3>
-                </div>
-            </div>
-            <form>
-            </form>
+        <form>
+            
+        </form>
+
         </div>
         <div class="containerTable">
             <div class="referenceTable">
@@ -156,10 +149,12 @@
                 </div>
             </div>
             <div class="divGuia">
-                <h4 class="Desplegable" onclick="toggleContenido()" title="Click para más información!">Instrucciones
+                <h4 class="Desplegable" onclick="toggleContenido()" title="Click para más información!">⬇ Ver
+                    instrucciones
                 </h4>
                 <div class="contenido" id="contenido">
                     <ul>
+                        <li><b>Métodos de carga:</b> Elije un método para calular.</li>
                         <li><b>Formato:</b> 24 horas.</li>
                         <li><b>¿Cómo cargar datos?</b> Ingresa tu hora de Entrada y Salida.</li>
                         <li><b>Días libres:</b> No completar casillas de Entrada y Salida.</li>

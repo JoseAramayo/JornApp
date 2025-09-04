@@ -11,6 +11,8 @@ let formato = new Intl.NumberFormat('es-PY', {
 });
 
 const form = document.querySelector("form");
+const divTitulos = document.querySelector(".divTitulos");
+
 const fechaActual = new Date();
 const anio = fechaActual.getFullYear();
 document.getElementById("selectMes").value = fechaActual.getMonth();
@@ -23,7 +25,28 @@ document.getElementById("spanJornalNocturno").textContent = formato.format(jorna
 document.getElementById("spanDiaFerDom").textContent = formato.format(jornal[2]);
 document.getElementById("spanNocheFerDom").textContent = formato.format(jornal[3]);
 
-function generarTabla() {
+function cargarPorEntradaSalida() {
+    const divTitulos = document.createElement("div");
+    divTitulos.classList.add("divTitulos");
+    divTitulos.innerHTML = `
+        <div class="divTitulos">
+            <div class="container">
+                <h3 title="Feriado/Domingo">Fer/Dom</h3>
+            </div>
+            <div class="container">
+                <h3>Día</h3>
+            </div>
+            <div class="container">
+                <h3>Fecha</h3>
+            </div>
+            <div class="container">
+                <h3>Entrada</h3>
+            </div>
+            <div class="container">
+                <h3>Salida</h3>
+            </div>
+        </div>`;
+    form.appendChild(divTitulos);
     arrayDayOfTheWeek = [];
     totalDays = [];
     diasEnMes = new Date(anio, mes + 1, 0).getDate();
@@ -99,15 +122,128 @@ function generarTabla() {
     validarInputRango("inputMS", 0, 59);
 };
 
+function cargarPorHorasTrabajadas() {
+    const divTitulos = document.createElement("div");
+    divTitulos.classList.add("divTitulos");
+    divTitulos.innerHTML = `
+        <div class="divTitulos">
+            <div class="container">
+                <h3 title="Feriado/Domingo">Fer/Dom</h3>
+            </div>
+            <div class="container">
+                <h3>Día</h3>
+            </div>
+            <div class="container">
+                <h3>Fecha</h3>
+            </div>
+            <div class="container">
+                <h3>Diurnas</h3>
+            </div>
+            <div class="container">
+                <h3>Nocturnas</h3>
+            </div>
+        </div>`;
+    form.appendChild(divTitulos);
+
+    arrayDayOfTheWeek = [];
+    totalDays = [];
+    diasEnMes = new Date(anio, mes + 1, 0).getDate();
+    for (let dia = 1; dia <= diasEnMes; dia++) {
+        const fecha = new Date(anio, mes, dia);
+        const diaSemana = fecha.toLocaleDateString("es-ES", { weekday: "long" });
+
+        arrayDayOfTheWeek.push(diaSemana);
+        arrayDayOfTheWeek.push("-");
+        totalDays.push(dia);
+        totalDays.push("-")
+
+        const fechaFormateada = fecha.toLocaleDateString("es-ES");
+        const divRow = document.createElement("div");
+        divRow.classList.add("divRow");
+        divRow.innerHTML = `
+				<div class="container">
+					<div  class="columnChkBox">
+						<input type="checkbox" class="checkBoxFerDom" id="checkBoxId${dia}">
+					</div>
+				</div>
+				<div class="container">
+					<div  class="columnDate">
+						<span class="dateWeek" id="dayId${dia}">${diaSemana}</span>
+					</div>
+				</div>
+				<div class="container">
+					<div  class="columnWeek">
+						<span class="date">${fechaFormateada}</span>
+					</div>
+				</div>
+				<div class="container">
+					<div class="columnHE">
+						<input placeholder="--" type="number" class="inputHE" min="0" max="23" id="HE${dia}" title="Hora de 00 a 23"  maxlength="2" required>
+					</div>
+				</div>
+				<div class="container">
+					<div class="columnHS">
+						<input placeholder="--" type="number" class="inputHS"  min="0" max="23"  id="HS${dia}" title="Hora de 00 a 23" maxlength="2" required>
+					</div>
+				</div>`;
+        form.appendChild(divRow);
+        if (diaSemana === "domingo") {
+            const checkboxDom = document.getElementById(`checkBoxId${dia}`);
+            checkboxDom.checked = true;
+            checkboxDom.disabled = true;
+        }
+    }
+    function validarInputRango(clase, min, max) {
+        document.querySelectorAll(`.${clase}`).forEach(input => {
+            input.addEventListener("input", () => {
+                let val = parseInt(input.value);
+                if (isNaN(val)) return;
+
+                if (val < min) input.value = min;
+                else if (val > max) input.value = max;
+            });
+            input.addEventListener("blur", () => {
+                let val = parseInt(input.value);
+                if (!isNaN(val)) {
+                    input.value = val.toString().padStart(2, '0');
+                }
+            });
+        });
+    }
+};
+
+function textoInformativo() {
+    const textoInformativo = document.createElement("p");
+    textoInformativo.classList.add("p-texto-informativo");
+    textoInformativo.innerHTML = "Selecciona un método de carga.";
+    form.appendChild(textoInformativo);
+}
+
 document.addEventListener("DOMContentLoaded", function () {
-    generarTabla();
-    calcular();
+    textoInformativo();
 });
 
+document.getElementById("select-metodo").addEventListener("change", function () {
+    let metodo = document.getElementById("select-metodo").value;
+    if (metodo === "1") {
+        form.innerHTML = "";
+        textoInformativo();
+    } else if (metodo === "2") {
+        form.innerHTML = "";
+        cargarPorEntradaSalida();
+    } else {
+        form.innerHTML = "";
+        cargarPorHorasTrabajadas();
+    }
+});
+
+
 document.getElementById("selectMes").addEventListener("change", function () {
+
+
     form.innerHTML = "";
     mes = parseInt(this.value);
-    generarTabla(mes);
+    cargarPorEntradaSalida();
     calcular();
 });
 
