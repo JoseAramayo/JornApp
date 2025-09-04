@@ -2,7 +2,7 @@ let horaEntrada, minutoEntrada, horaSalida, minutoSalida,
     horasDiurnas, horasNocturnas, checkBoxFerDom, totalDiurnas,
     totalNocturnas, totalDFerdom, totalNFerdom, diasLibres, arrayDayOfTheWeek, totalDays, diasEnMes;
 
-let version = "1.0.0";
+let version = "2.0.0";
 document.getElementById('spanAppVersion').textContent = version;
 
 let formato = new Intl.NumberFormat('es-PY', {
