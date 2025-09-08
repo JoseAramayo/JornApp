@@ -23,7 +23,7 @@
     </nav>
     <div class="containerTitle">
         <h1>Calcular horas de </h1>
-        <select id="selectMes">
+        <select id="selectMes" disabled>
             <option value="0">Enero</option>
             <option value="1">Febrero</option>
             <option value="2">Marzo</option>
@@ -40,20 +40,40 @@
     </div>
     <main>
 
-           <div class="formContainer">
-                <div class="container-select-metodo">
-                    <select id="select-metodo">
-                        <option value="1" selected disabled>--Selecciona--</option>
-                        <option value="2">Hora de Entrada/Salida</option>
-                        <option value="3">Horas Trabajadas</option>
-                    </select>
-                </div>
-        <form>
-            
-        </form>
+        <div class="formContainer">
+            <div class="container-select-metodo">
+                <label>Método:</label>
+                <select id="select-metodo">
+                    <option value="1" selected disabled>-- Selecciona --</option>
+                    <option value="2">Hora de entrada y salida</option>
+                    <option value="3">Horas trabajadas</option>
+                </select>
+            </div>
+            <form>
+
+            </form>
 
         </div>
+
         <div class="containerTable">
+            <div class="divGuia">
+                <h4 class="Desplegable" onclick="toggleContenido()" title="Click para más información!">⬇ Ver
+                    instrucciones
+                </h4>
+                <div class="contenido" id="contenido">
+                    <ul>
+                        <li><b>Método:</b> Elije un método para cargar tus horas.</li>
+                        <li><b>Días libres:</b> No completar casillas de Entrada y Salida.</li>
+                        <li><b>Fer/Dom:</b> Feriado/Domingo</li>
+                        <li><b>Feriados:</b> Márcalos manualmente.</li>
+                        <li><b>Domingos:</b> Se marcan automáticamente.</li>
+                        <li><b>PDF:</b> Descarga una “Captura de pantalla”.</li>
+                        <li><b>Guarda:</b> Exporta los datos en un archivo con tus horas cargadas.</li>
+                        <li><b>Importar:</b> Volverá a cargar tus horas en donde lo dejaste.</li>
+                        <li><b>Excel:</b> Exporta un Excel con las horas para compartirlo al supervisor.</li>
+                    </ul>
+                </div>
+            </div>
             <div class="referenceTable">
                 <div class="column">
                     <h4>Jornal Diurno</h4>
@@ -148,26 +168,7 @@
                     <input type="file" id="importarJson" accept=".json">
                 </div>
             </div>
-            <div class="divGuia">
-                <h4 class="Desplegable" onclick="toggleContenido()" title="Click para más información!">⬇ Ver
-                    instrucciones
-                </h4>
-                <div class="contenido" id="contenido">
-                    <ul>
-                        <li><b>Métodos de carga:</b> Elije un método para calular.</li>
-                        <li><b>Formato:</b> 24 horas.</li>
-                        <li><b>¿Cómo cargar datos?</b> Ingresa tu hora de Entrada y Salida.</li>
-                        <li><b>Días libres:</b> No completar casillas de Entrada y Salida.</li>
-                        <li><b>Fer/Dom:</b> Feriado/Domingo</li>
-                        <li><b>Feriados:</b> Márcalos manualmente.</li>
-                        <li><b>Domingos:</b> Se marcan automáticamente.</li>
-                        <li><b>PDF:</b> Descarga una “Captura de pantalla”.</li>
-                        <li><b>Guarda:</b> Exporta las horas en un archivo "Horas_de_MES_AÑO".</li>
-                        <li><b>Importar:</b> Cargará los datos del archivo "Horas_de_MES_AÑO".</li>
-                        <li><b>Excel:</b> Exporta un Excel con las horas para compartirlo al supervisor.</li>
-                    </ul>
-                </div>
-            </div>
+
         </div>
     </main>
     <footer>

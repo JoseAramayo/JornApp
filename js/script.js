@@ -1,6 +1,9 @@
-let horaEntrada, minutoEntrada, horaSalida, minutoSalida,
-    horasDiurnas, horasNocturnas, checkBoxFerDom, totalDiurnas,
-    totalNocturnas, totalDFerdom, totalNFerdom, diasLibres, arrayDayOfTheWeek, totalDays, diasEnMes;
+let metodo, arrayHoraEntrada, arrayMinutoEntrada, arrayHoraSalida, arrayMinutoSalida, //metodo por entrada y salida
+    arrayHorasDiurnas, arrayHorasNocturnas, arrayCheckBoxFerDom, // validar si es diurna/nocturna y domingo o feriado
+    arrayDiurnas, arrayNocturnas, hDiurnas, hNocturnas, // método por horas diurnas y nocturnas
+    totalDiurnas, totalNocturnas, totalDFerdom, totalNFerdom, diasLibres, cantDiasDelmes, // acumuladores
+    arrayDiasDeLaSemana,  // arrays para guardar fechas y dias 
+    arrayDia; // array que guarda las fechas
 
 let version = "2.0.0";
 document.getElementById('spanAppVersion').textContent = version;
@@ -47,17 +50,17 @@ function cargarPorEntradaSalida() {
             </div>
         </div>`;
     form.appendChild(divTitulos);
-    arrayDayOfTheWeek = [];
-    totalDays = [];
-    diasEnMes = new Date(anio, mes + 1, 0).getDate();
-    for (let dia = 1; dia <= diasEnMes; dia++) {
+    arrayDiasDeLaSemana = [];
+    arrayDia = [];
+    cantDiasDelmes = new Date(anio, mes + 1, 0).getDate();
+    for (let dia = 1; dia <= cantDiasDelmes; dia++) {
         const fecha = new Date(anio, mes, dia);
         const diaSemana = fecha.toLocaleDateString("es-ES", { weekday: "long" });
 
-        arrayDayOfTheWeek.push(diaSemana);
-        arrayDayOfTheWeek.push("-");
-        totalDays.push(dia);
-        totalDays.push("-")
+        arrayDiasDeLaSemana.push(diaSemana);
+        arrayDiasDeLaSemana.push("-");
+        arrayDia.push(dia);
+        arrayDia.push("-")
 
         const fechaFormateada = fecha.toLocaleDateString("es-ES");
         const divRow = document.createElement("div");
@@ -65,7 +68,7 @@ function cargarPorEntradaSalida() {
         divRow.innerHTML = `
 				<div class="container">
 					<div  class="columnChkBox">
-						<input type="checkbox" class="checkBoxFerDom" id="checkBoxId${dia}">
+						<input type="checkbox" class="arrayCheckBoxFerDom" id="checkBoxId${dia}">
 					</div>
 				</div>
 				<div class="container">
@@ -145,17 +148,17 @@ function cargarPorHorasTrabajadas() {
         </div>`;
     form.appendChild(divTitulos);
 
-    arrayDayOfTheWeek = [];
-    totalDays = [];
-    diasEnMes = new Date(anio, mes + 1, 0).getDate();
-    for (let dia = 1; dia <= diasEnMes; dia++) {
+    arrayDiasDeLaSemana = [];
+    arrayDia = [];
+    cantDiasDelmes = new Date(anio, mes + 1, 0).getDate();
+    for (let dia = 1; dia <= cantDiasDelmes; dia++) {
         const fecha = new Date(anio, mes, dia);
         const diaSemana = fecha.toLocaleDateString("es-ES", { weekday: "long" });
 
-        arrayDayOfTheWeek.push(diaSemana);
-        arrayDayOfTheWeek.push("-");
-        totalDays.push(dia);
-        totalDays.push("-")
+        arrayDiasDeLaSemana.push(diaSemana);
+        arrayDiasDeLaSemana.push("-");
+        arrayDia.push(dia);
+        arrayDia.push("-")
 
         const fechaFormateada = fecha.toLocaleDateString("es-ES");
         const divRow = document.createElement("div");
@@ -163,7 +166,7 @@ function cargarPorHorasTrabajadas() {
         divRow.innerHTML = `
 				<div class="container">
 					<div  class="columnChkBox">
-						<input type="checkbox" class="checkBoxFerDom" id="checkBoxId${dia}">
+						<input type="checkbox" class="arrayCheckBoxFerDom" id="checkBoxId${dia}">
 					</div>
 				</div>
 				<div class="container">
@@ -178,12 +181,12 @@ function cargarPorHorasTrabajadas() {
 				</div>
 				<div class="container">
 					<div class="columnHE">
-						<input placeholder="--" type="number" class="inputHE" min="0" max="23" id="HE${dia}" title="Hora de 00 a 23"  maxlength="2" required>
+						<input placeholder="--" type="number" class="inputHE" id="HD${dia}"  maxlength="2" required>
 					</div>
 				</div>
 				<div class="container">
 					<div class="columnHS">
-						<input placeholder="--" type="number" class="inputHS"  min="0" max="23"  id="HS${dia}" title="Hora de 00 a 23" maxlength="2" required>
+						<input placeholder="--" type="number" class="inputHS" id="HN${dia}" maxlength="2" required>
 					</div>
 				</div>`;
         form.appendChild(divRow);
@@ -224,46 +227,55 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.getElementById("select-metodo").addEventListener("change", function () {
-    let metodo = document.getElementById("select-metodo").value;
+    metodo = document.getElementById("select-metodo").value;
+    document.getElementById("selectMes").disabled = false;
+
     if (metodo === "1") {
         form.innerHTML = "";
         textoInformativo();
     } else if (metodo === "2") {
         form.innerHTML = "";
         cargarPorEntradaSalida();
+        calcularPorEntradaSalida();
     } else {
         form.innerHTML = "";
         cargarPorHorasTrabajadas();
+        calcularPorHorasTrabajadas();
     }
 });
 
-
 document.getElementById("selectMes").addEventListener("change", function () {
-
-
+    metodo = document.getElementById("select-metodo").value;
     form.innerHTML = "";
     mes = parseInt(this.value);
-    cargarPorEntradaSalida();
-    calcular();
+    if (metodo === "2") {
+        cargarPorEntradaSalida();
+        calcularPorEntradaSalida();
+
+    } else if (metodo === "3") {
+        cargarPorHorasTrabajadas();
+        calcularPorHorasTrabajadas();
+
+    }
 });
 
-function calcular() {
-    diasEnMes = new Date(anio, mes + 1, 0).getDate();
+function calcularPorEntradaSalida() {
+    cantDiasDelmes = new Date(anio, mes + 1, 0).getDate();
 
-    horaEntrada = [];
-    minutoEntrada = [];
-    horaSalida = [];
-    minutoSalida = [];
-    horasDiurnas = [];
-    horasNocturnas = [];
-    checkBoxFerDom = [];
+    arrayHoraEntrada = [];
+    arrayMinutoEntrada = [];
+    arrayHoraSalida = [];
+    arrayMinutoSalida = [];
+    arrayHorasDiurnas = [];
+    arrayHorasNocturnas = [];
+    arrayCheckBoxFerDom = [];
     totalDiurnas = 0;
     totalNocturnas = 0;
     totalDFerdom = 0;
     totalNFerdom = 0;
     diasLibres = 0;
 
-    for (let i = 0; i < diasEnMes; i++) {
+    for (let i = 0; i < cantDiasDelmes; i++) {
         let c = i + 1;
 
         let inputHE = document.getElementById(`HE${c}`);
@@ -287,108 +299,108 @@ function calcular() {
             alert("Algunas casillas están incompletas. Intenta otra vez.")
             break;
         } else {
-            horaEntrada.push(parseInt(inputHE.value) || 0);
-            minutoEntrada.push(parseInt(inputME.value) || 0);
-            horaSalida.push(parseInt(inputHS.value) || 0);
-            minutoSalida.push(parseInt(inputMS.value) || 0);
+            arrayHoraEntrada.push(parseInt(inputHE.value) || 0);
+            arrayMinutoEntrada.push(parseInt(inputME.value) || 0);
+            arrayHoraSalida.push(parseInt(inputHS.value) || 0);
+            arrayMinutoSalida.push(parseInt(inputMS.value) || 0);
         }
 
-        minutoEntrada[i] /= 60;
-        minutoSalida[i] /= 60;
-        horaEntrada[i] += parseFloat(minutoEntrada[i].toFixed(2));
-        horaSalida[i] += parseFloat(minutoSalida[i].toFixed(2));
+        arrayMinutoEntrada[i] /= 60;
+        arrayMinutoSalida[i] /= 60;
+        arrayHoraEntrada[i] += parseFloat(arrayMinutoEntrada[i].toFixed(2));
+        arrayHoraSalida[i] += parseFloat(arrayMinutoSalida[i].toFixed(2));
 
         let checkbox = document.getElementById(`checkBoxId${c}`);
 
         if (checkbox && checkbox.checked) {
-            checkBoxFerDom[i] = c;
-            if (horaEntrada[i] == 0 && horaSalida[i] == 0) {
+            arrayCheckBoxFerDom[i] = c;
+            if (arrayHoraEntrada[i] == 0 && arrayHoraSalida[i] == 0) {
                 diasLibres += 1;
-                horasDiurnas[i] = 0;
-                horasNocturnas[i] = 0;
+                arrayHorasDiurnas[i] = 0;
+                arrayHorasNocturnas[i] = 0;
             } else {
-                if (horaSalida[i] === 0) {
-                    horaSalida[i] = 24;
+                if (arrayHoraSalida[i] === 0) {
+                    arrayHoraSalida[i] = 24;
                 }
-                if (horaSalida[i] < horaEntrada[i]) {
+                if (arrayHoraSalida[i] < arrayHoraEntrada[i]) {
                     alert("La Hora de Salida no puede ser menor a la Entrada. Intenta otra vez.")
                     break;
                 }
-                if (horaEntrada[i] >= 6 && horaEntrada[i] < 20) {
-                    if (horaSalida[i] <= 20) {
-                        horasDiurnas[i] = horaSalida[i] - horaEntrada[i];
-                        totalDFerdom += horasDiurnas[i];
-                        horasNocturnas[i] = 0;
+                if (arrayHoraEntrada[i] >= 6 && arrayHoraEntrada[i] < 20) {
+                    if (arrayHoraSalida[i] <= 20) {
+                        arrayHorasDiurnas[i] = arrayHoraSalida[i] - arrayHoraEntrada[i];
+                        totalDFerdom += arrayHorasDiurnas[i];
+                        arrayHorasNocturnas[i] = 0;
                     } else {
-                        horasDiurnas[i] = 20 - horaEntrada[i];
-                        horasNocturnas[i] = horaSalida[i] - 20;
-                        totalDFerdom += horasDiurnas[i];
-                        totalNFerdom += horasNocturnas[i];
+                        arrayHorasDiurnas[i] = 20 - arrayHoraEntrada[i];
+                        arrayHorasNocturnas[i] = arrayHoraSalida[i] - 20;
+                        totalDFerdom += arrayHorasDiurnas[i];
+                        totalNFerdom += arrayHorasNocturnas[i];
                     }
-                } else if ((horaEntrada[i] >= 20 && horaEntrada[i] < 24)) {
-                    horasNocturnas[i] = horaSalida[i] - horaEntrada[i];
-                    totalNFerdom += horasNocturnas[i];
-                    horasDiurnas[i] = 0;
-                } else if (horaEntrada[i] >= 0 && horaEntrada[i] < 6) {
-                    if (horaSalida[i] === 24) {
-                        horaSalida[i] = 0;
+                } else if ((arrayHoraEntrada[i] >= 20 && arrayHoraEntrada[i] < 24)) {
+                    arrayHorasNocturnas[i] = arrayHoraSalida[i] - arrayHoraEntrada[i];
+                    totalNFerdom += arrayHorasNocturnas[i];
+                    arrayHorasDiurnas[i] = 0;
+                } else if (arrayHoraEntrada[i] >= 0 && arrayHoraEntrada[i] < 6) {
+                    if (arrayHoraSalida[i] === 24) {
+                        arrayHoraSalida[i] = 0;
                     }
-                    if (horaSalida[i] <= 6) {
-                        horasNocturnas[i] = horaSalida[i] - horaEntrada[i];
-                        totalNFerdom += horasNocturnas[i];
-                        horasDiurnas[i] = 0;
+                    if (arrayHoraSalida[i] <= 6) {
+                        arrayHorasNocturnas[i] = arrayHoraSalida[i] - arrayHoraEntrada[i];
+                        totalNFerdom += arrayHorasNocturnas[i];
+                        arrayHorasDiurnas[i] = 0;
                     } else {
-                        horasNocturnas[i] = 6 - horaEntrada[i];
-                        horasDiurnas[i] = horaSalida[i] - 6;
-                        totalDFerdom += horasDiurnas[i];
-                        totalNFerdom += horasNocturnas[i];
+                        arrayHorasNocturnas[i] = 6 - arrayHoraEntrada[i];
+                        arrayHorasDiurnas[i] = arrayHoraSalida[i] - 6;
+                        totalDFerdom += arrayHorasDiurnas[i];
+                        totalNFerdom += arrayHorasNocturnas[i];
                     }
                 }
             }
         } else {
-            checkBoxFerDom[i] = 0;
-            if (horaEntrada[i] == 0 && horaSalida[i] == 0) {
+            arrayCheckBoxFerDom[i] = 0;
+            if (arrayHoraEntrada[i] == 0 && arrayHoraSalida[i] == 0) {
                 diasLibres += 1;
-                horasDiurnas[i] = 0;
-                horasNocturnas[i] = 0;
+                arrayHorasDiurnas[i] = 0;
+                arrayHorasNocturnas[i] = 0;
             } else {
-                if (horaSalida[i] === 0) {
-                    horaSalida[i] = 24;
+                if (arrayHoraSalida[i] === 0) {
+                    arrayHoraSalida[i] = 24;
                 }
-                if (horaSalida[i] < horaEntrada[i]) {
+                if (arrayHoraSalida[i] < arrayHoraEntrada[i]) {
                     alert("La Hora de Salida no puede ser menor a la Entrada. Intenta otra vez.")
                     break;
                 }
-                if (horaEntrada[i] >= 6 && horaEntrada[i] < 20) {
-                    if (horaSalida[i] <= 20) {
-                        horasDiurnas[i] = horaSalida[i] - horaEntrada[i];
-                        totalDiurnas += horasDiurnas[i];
+                if (arrayHoraEntrada[i] >= 6 && arrayHoraEntrada[i] < 20) {
+                    if (arrayHoraSalida[i] <= 20) {
+                        arrayHorasDiurnas[i] = arrayHoraSalida[i] - arrayHoraEntrada[i];
+                        totalDiurnas += arrayHorasDiurnas[i];
 
-                        horasNocturnas[i] = 0;
+                        arrayHorasNocturnas[i] = 0;
                     } else {
-                        horasDiurnas[i] = 20 - horaEntrada[i];
-                        horasNocturnas[i] = horaSalida[i] - 20;
-                        totalDiurnas += horasDiurnas[i];
-                        totalNocturnas += horasNocturnas[i];
+                        arrayHorasDiurnas[i] = 20 - arrayHoraEntrada[i];
+                        arrayHorasNocturnas[i] = arrayHoraSalida[i] - 20;
+                        totalDiurnas += arrayHorasDiurnas[i];
+                        totalNocturnas += arrayHorasNocturnas[i];
                     }
-                } else if ((horaEntrada[i] >= 20 && horaEntrada[i] < 24)) {
-                    horasNocturnas[i] = horaSalida[i] - horaEntrada[i];
-                    totalNocturnas += horasNocturnas[i];
+                } else if ((arrayHoraEntrada[i] >= 20 && arrayHoraEntrada[i] < 24)) {
+                    arrayHorasNocturnas[i] = arrayHoraSalida[i] - arrayHoraEntrada[i];
+                    totalNocturnas += arrayHorasNocturnas[i];
 
-                    horasDiurnas[i] = 0;
-                } else if (horaEntrada[i] >= 0 && horaEntrada[i] < 6) {
-                    if (horaSalida[i] === 24) {
-                        horaSalida[i] = 0;
+                    arrayHorasDiurnas[i] = 0;
+                } else if (arrayHoraEntrada[i] >= 0 && arrayHoraEntrada[i] < 6) {
+                    if (arrayHoraSalida[i] === 24) {
+                        arrayHoraSalida[i] = 0;
                     }
-                    if (horaSalida[i] <= 6) {
-                        horasNocturnas[i] = horaSalida[i] - horaEntrada[i];
-                        totalNocturnas += horasNocturnas[i];
-                        horasDiurnas[i] = 0;
+                    if (arrayHoraSalida[i] <= 6) {
+                        arrayHorasNocturnas[i] = arrayHoraSalida[i] - arrayHoraEntrada[i];
+                        totalNocturnas += arrayHorasNocturnas[i];
+                        arrayHorasDiurnas[i] = 0;
                     } else {
-                        horasNocturnas[i] = 6 - horaEntrada[i];
-                        horasDiurnas[i] = horaSalida[i] - 6;
-                        totalDiurnas += horasDiurnas[i];
-                        totalNocturnas += horasNocturnas[i];
+                        arrayHorasNocturnas[i] = 6 - arrayHoraEntrada[i];
+                        arrayHorasDiurnas[i] = arrayHoraSalida[i] - 6;
+                        totalDiurnas += arrayHorasDiurnas[i];
+                        totalNocturnas += arrayHorasNocturnas[i];
                     }
                 }
             }
@@ -419,6 +431,87 @@ function calcular() {
     document.getElementById("spanTotalNeto").textContent = formato.format(Math.round(total));
 }
 
+function calcularPorHorasTrabajadas() {
+    cantDiasDelmes = new Date(anio, mes + 1, 0).getDate();
+
+    arrayDiurnas = [];
+    arrayNocturnas = [];
+    arrayHorasDiurnas = 0;
+    arrayHorasNocturnas = 0;
+    arrayCheckBoxFerDom = [];
+    totalDiurnas = 0;
+    totalNocturnas = 0;
+    totalDFerdom = 0;
+    totalNFerdom = 0;
+    diasLibres = 0;
+
+    for (let i = 0; i < cantDiasDelmes; i++) {
+        let c = i + 1;
+        let inputHD = document.getElementById(`HD${c}`);
+        let inputHN = document.getElementById(`HN${c}`);
+
+        arrayDiurnas.push(parseFloat(inputHD.value) || 0);
+        arrayNocturnas.push(parseFloat(inputHN.value) || 0);
+
+        let checkbox = document.getElementById(`checkBoxId${c}`);
+
+        if (checkbox && checkbox.checked) {
+            arrayCheckBoxFerDom[i] = c;
+            if (arrayDiurnas[i] == 0 && arrayNocturnas[i] == 0) {
+                diasLibres += 1;
+                arrayHorasDiurnas[i] = 0;
+                arrayNocturnas[i] = 0;
+            } else {
+                totalDFerdom += arrayDiurnas[i];
+                totalNFerdom += arrayNocturnas[i]
+            }
+        } else {
+            arrayCheckBoxFerDom[i] = 0;
+            if (arrayDiurnas[i] == 0 && arrayNocturnas[i] == 0) {
+                diasLibres += 1;
+                arrayDiurnas[i] = 0;
+                arrayNocturnas[i] = 0;
+            } else {
+                totalDiurnas += arrayDiurnas[i];
+                totalNocturnas += arrayNocturnas[i]
+            }
+        }
+    }
+    totalDiurnas = parseFloat(totalDiurnas.toFixed(1));
+    totalNocturnas = parseFloat(totalNocturnas.toFixed(1));
+    totalDFerdom = parseFloat(totalDFerdom.toFixed(1));
+    totalNFerdom = parseFloat(totalNFerdom.toFixed(1));
+    let cobroDiurnas = totalDiurnas * jornal[0]
+    let cobroNocturnas = totalNocturnas * jornal[1]
+    let cobroDiaFerDom = totalDFerdom * jornal[2];
+    let cobroNocheFerDom = totalNFerdom * jornal[3];
+    let totalBruto = cobroDiurnas + cobroNocturnas + cobroDiaFerDom + cobroNocheFerDom;
+    let descIPS = totalBruto * 0.09;
+    let total = totalBruto - descIPS;
+    document.getElementById("spanTotalDiurnas").textContent = totalDiurnas;
+    document.getElementById("spanTotalNocturnas").textContent = totalNocturnas;
+    document.getElementById("spanTotalDFerDom").textContent = totalDFerdom;
+    document.getElementById("spanTotalNFerDom").textContent = totalNFerdom;
+    document.getElementById("spanCobroDiurnas").textContent = formato.format(Math.round(cobroDiurnas));
+    document.getElementById("spanCobroNocturnas").textContent = formato.format(Math.round(cobroNocturnas));
+    document.getElementById("spanCobroDiaFerDom").textContent = formato.format(Math.round(cobroDiaFerDom));
+    document.getElementById("spanCobroNocheFerDom").textContent = formato.format(Math.round(cobroNocheFerDom));
+    document.getElementById("spanDescIPS").textContent = formato.format(Math.round(descIPS));
+    document.getElementById("spandiasLibres").textContent = diasLibres;
+    document.getElementById("spanTotalBruto").textContent = formato.format(Math.round(totalBruto));
+    document.getElementById("spanTotalNeto").textContent = formato.format(Math.round(total));
+}
+
+function calcular() {
+    if (metodo === "2") {
+        calcularPorEntradaSalida();
+    } else if (metodo === "3") {
+        calcularPorHorasTrabajadas();
+    } else {
+        alert("Primero selecciona un método de carga.");
+    }
+}
+
 function reiniciar() {
     location.reload();
 }
@@ -431,90 +524,202 @@ function imprimir() {
 }
 
 function guardar() {
-    calcular();
-    const datos = {
-        horaEntrada: horaEntrada,
-        horaSalida: horaSalida,
-        checkBoxFerDom: checkBoxFerDom
-    };
-    const jsonDatos = JSON.stringify(datos, null, 2);
-    const blob = new Blob([jsonDatos], { type: "application/json" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `${meses[mes]}_${anio}_horas.json`;
-    link.click();
-    URL.revokeObjectURL(link.href);
+    metodo = document.getElementById("select-metodo").value;
+
+    if (metodo === "2") {
+        calcular();
+        const datos = {
+            Hora_De_Entrada: arrayHoraEntrada,
+            Hora_De_Salida: arrayHoraSalida,
+            arrayCheckBoxFerDom: arrayCheckBoxFerDom
+        };
+        const jsonDatos = JSON.stringify(datos, null, 2);
+        const blob = new Blob([jsonDatos], { type: "application/json" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `${meses[mes]}_${anio}_horas_entrada_salida.json`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+
+    } else if (metodo === "3") {
+        calcular();
+        const datos = {
+            Horas_Diurnas: arrayDiurnas,
+            Horas_Nocturnas: arrayNocturnas,
+            arrayCheckBoxFerDom: arrayCheckBoxFerDom
+        };
+        const jsonDatos = JSON.stringify(datos, null, 2);
+        const blob = new Blob([jsonDatos], { type: "aplication/json" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `${meses[mes]}_${anio}_horas_trabajadas.json`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+    } else {
+        alert("No hay datos para guardar.");
+    }
 }
 
 function Export() {
-    calcular();
-    let name = '';
-    while (!name) {
-        name = prompt('Ingresa tu nombre y apellido, por favor.')
-        name = name.trim().replace(/\s+/g, '_');
-    }
-    const horasExcel = [];
-    const tags = [];
-    for (let i = 0; i < diasEnMes; i++) {
-        tags.push("D");
-        tags.push("N");
-        horasExcel.push(horasDiurnas[i])
-        horasExcel.push(horasNocturnas[i])
-    }
+    metodo = document.getElementById("select-metodo").value;
+    if (metodo === "2") {
+        calcularPorEntradaSalida();
+        let name = '';
+        while (!name) {
+            name = prompt('Ingresa tu nombre y apellido, por favor.')
+            name = name.trim().replace(/\s+/g, '_');
+        }
+        const horasExcel = [];
+        const tags = [];
+        for (let i = 0; i < cantDiasDelmes; i++) {
+            tags.push("D");
+            tags.push("N");
+            horasExcel.push(arrayHorasDiurnas[i])
+            horasExcel.push(arrayHorasNocturnas[i])
+        }
 
-    const matriz = [totalDays, arrayDayOfTheWeek, tags, horasExcel]
-    const worksheet = XLSX.utils.aoa_to_sheet(matriz);
+        const matriz = [arrayDia, arrayDiasDeLaSemana, tags, horasExcel]
+        const worksheet = XLSX.utils.aoa_to_sheet(matriz);
 
-    worksheet['!merges'] = [];
-    for (let i = 0; i < arrayDayOfTheWeek.length; i++) {
-        worksheet['!merges'].push({
-            s: { r: 1, c: i * 2 },
-            e: { r: 1, c: i * 2 + 1 }
-        });
-        worksheet['!merges'].push({
-            s: { r: 0, c: i * 2 },
-            e: { r: 0, c: i * 2 + 1 }
-        });
-    };
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, `Horas_${meses[mes]}_${anio}`);
-    XLSX.writeFile(workbook, `JornApp_Horas_${meses[mes]}_${anio}_${name}.xlsx`);
+        worksheet['!merges'] = [];
+        for (let i = 0; i < arrayDiasDeLaSemana.length; i++) {
+            worksheet['!merges'].push({
+                s: { r: 1, c: i * 2 },
+                e: { r: 1, c: i * 2 + 1 }
+            });
+            worksheet['!merges'].push({
+                s: { r: 0, c: i * 2 },
+                e: { r: 0, c: i * 2 + 1 }
+            });
+        };
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, `Horas_${meses[mes]}_${anio}`);
+        XLSX.writeFile(workbook, `JornApp_Horas_${meses[mes]}_${anio}_${name}.xlsx`);
+    } else if (metodo === "3") {
+        calcularPorHorasTrabajadas();
+        let name = '';
+        while (!name) {
+            name = prompt('Ingresa tu nombre y apellido, por favor.')
+            name = name.trim().replace(/\s+/g, '_');
+        }
+        const horasExcel = [];
+        const tags = [];
+        for (let i = 0; i < cantDiasDelmes; i++) {
+            tags.push("D");
+            tags.push("N");
+            horasExcel.push(arrayDiurnas[i])
+            horasExcel.push(arrayNocturnas[i])
+        }
+
+        const matriz = [arrayDia, arrayDiasDeLaSemana, tags, horasExcel]
+        const worksheet = XLSX.utils.aoa_to_sheet(matriz);
+
+        worksheet['!merges'] = [];
+        for (let i = 0; i < arrayDiasDeLaSemana.length; i++) {
+            worksheet['!merges'].push({
+                s: { r: 1, c: i * 2 },
+                e: { r: 1, c: i * 2 + 1 }
+            });
+            worksheet['!merges'].push({
+                s: { r: 0, c: i * 2 },
+                e: { r: 0, c: i * 2 + 1 }
+            });
+        };
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, `Horas_${meses[mes]}_${anio}`);
+        XLSX.writeFile(workbook, `JornApp_Horas_${meses[mes]}_${anio}_${name}.xlsx`);
+    } else {
+        alert("No hay datos para exportar.");
+    }
 }
 
 document.getElementById("importarJson").addEventListener("change", function (event) {
     const file = event.target.files[0];
     if (!file) return;
+
+    const nombreArchivo = file.name;
     const reader = new FileReader();
-    reader.onload = function (e) {
-        try {
-            const contenido = e.target.result;
-            const datos = JSON.parse(contenido);
-            for (let i = 0; i < datos.horaEntrada.length; i++) {
-                const c = i + 1;
-                const entrada = datos.horaEntrada[i];
-                const salida = datos.horaSalida[i];
-                const horaE = Math.floor(entrada);
-                const minutoE = Math.round((entrada - horaE) * 60);
-                const horaS = Math.floor(salida);
-                const minutoS = Math.round((salida - horaS) * 60);
-                document.getElementById(`HE${c}`).value = horaE.toString().padStart(2, "0");
-                document.getElementById(`ME${c}`).value = minutoE.toString().padStart(2, "0");
-                document.getElementById(`HS${c}`).value = horaS === 24 ? "00" : horaS.toString().padStart(2, "0");
-                document.getElementById(`MS${c}`).value = minutoS.toString().padStart(2, "0");
-                const check = document.getElementById(`checkBoxId${c}`);
-                if (datos.checkBoxFerDom[i] !== 0 && check) {
-                    check.checked = true;
-                } else if (check) {
-                    check.checked = false;
+
+    if (nombreArchivo.includes("horas_entrada_salida")) {
+        document.getElementById("select-metodo").value = "2";
+        metodo = "2";
+        const mesDelArchivo = meses.find(mes => nombreArchivo.includes(mes));
+        mes = meses.indexOf(mesDelArchivo);
+        form.innerHTML = ``;
+        cargarPorEntradaSalida();
+        document.getElementById("selectMes").value = mes;
+        document.getElementById("selectMes").disabled = false;
+
+        reader.onload = function (e) {
+            try {
+                const contenido = e.target.result;
+                const datos = JSON.parse(contenido);
+                for (let i = 0; i < datos.Hora_De_Entrada.length; i++) {
+                    const c = i + 1;
+                    const entrada = datos.Hora_De_Entrada[i];
+                    const salida = datos.Hora_De_Salida[i];
+                    const horaE = Math.floor(entrada);
+                    const minutoE = Math.round((entrada - horaE) * 60);
+                    const horaS = Math.floor(salida);
+                    const minutoS = Math.round((salida - horaS) * 60);
+                    document.getElementById(`HE${c}`).value = horaE.toString().padStart(2, "0");
+                    document.getElementById(`ME${c}`).value = minutoE.toString().padStart(2, "0");
+                    document.getElementById(`HS${c}`).value = horaS === 24 ? "00" : horaS.toString().padStart(2, "0");
+                    document.getElementById(`MS${c}`).value = minutoS.toString().padStart(2, "0");
+                    const check = document.getElementById(`checkBoxId${c}`);
+                    if (datos.arrayCheckBoxFerDom[i] !== 0 && check) {
+                        check.checked = true;
+                    } else if (check) {
+                        check.checked = false;
+                    }
                 }
+                calcularPorEntradaSalida();
+                alert(`Datos cargados correctamente: ${nombreArchivo}`);
+            } catch (error) {
+                console.log("Error al leer archivo JSON:", error)
+                alert("Error al leer archivo");
             }
-            calcular();
-            alert("Datos importados correctamente.");
-        } catch (error) {
-            console.error("Error al leer archivo JSON:", error);
-            alert("El archivo no tiene un formato válido.");
-        }
-    };
+        };
+    } else if (nombreArchivo.includes("horas_trabajadas")) {
+        document.getElementById("select-metodo").value = "3";
+        metodo = "3";
+        const mesDelArchivo = meses.find(mes => nombreArchivo.includes(mes));
+        mes = meses.indexOf(mesDelArchivo);
+        form.innerHTML = ``;
+        cargarPorHorasTrabajadas();
+        document.getElementById("selectMes").value = mes;
+        document.getElementById("selectMes").disabled = false;
+
+        reader.onload = function (e) {
+            try {
+                const contenido = e.target.result;
+                const datos = JSON.parse(contenido);
+                for (let i = 0; i < datos.Horas_Diurnas.length; i++) {
+                    const c = i + 1;
+                    const diurnas = datos.Horas_Diurnas[i];
+                    const nocturnas = datos.Horas_Nocturnas[i];
+                    document.getElementById(`HD${c}`).value = diurnas.toString();
+                    document.getElementById(`HN${c}`).value = nocturnas.toString();
+                    const check = document.getElementById(`checkBoxId${c}`);
+                    if (datos.arrayCheckBoxFerDom[i] !== 0 && check) {
+                        check.checked = true;
+                    } else if (check) {
+                        check.checked = false;
+                    }
+                }
+                calcularPorHorasTrabajadas();
+                alert(`Datos cargados correctamente: ${nombreArchivo}`);
+            } catch (error) {
+                console.log("Error al leer archivo JSON:", error)
+                alert("Error al leer archivo");
+            }
+        };
+    } else {
+        alert("El archivo no cumple el formato requerido.");
+
+    }
+
+
     reader.readAsText(file);
 });
 
@@ -522,3 +727,12 @@ function toggleContenido() {
     const contenido = document.getElementById('contenido');
     contenido.classList.toggle('mostrar');
 }
+
+document.addEventListener("keydown", e => {
+    if (e.key === "Enter" && e.target.tagName === "INPUT") {
+        e.preventDefault();
+        const inputs = Array.from(document.querySelectorAll("input"));
+        const i = inputs.indexOf(e.target);
+        if (inputs[i + 1]) inputs[i + 1].focus();
+    }
+});
