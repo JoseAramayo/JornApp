@@ -23,10 +23,6 @@ var mes = parseInt(document.getElementById("selectMes").value);
 let meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
 let jornal = [13938, 18119, 27875, 36238]
 
-const INICIO_DIURNO = 6;
-const FIN_DIURNO = 20;
-const MEDIA_NOCHE = 24;
-
 document.getElementById("spanJornalDiurno").textContent = formato.format(jornal[0]);
 document.getElementById("spanJornalNocturno").textContent = formato.format(jornal[1]);
 document.getElementById("spanDiaFerDom").textContent = formato.format(jornal[2]);
@@ -200,7 +196,23 @@ function cargarPorHorasTrabajadas() {
             checkboxDom.disabled = true;
         }
     }
-    mostrarResultados();
+    function validarInputRango(clase, min, max) {
+        document.querySelectorAll(`.${clase}`).forEach(input => {
+            input.addEventListener("input", () => {
+                let val = parseInt(input.value);
+                if (isNaN(val)) return;
+
+                if (val < min) input.value = min;
+                else if (val > max) input.value = max;
+            });
+            input.addEventListener("blur", () => {
+                let val = parseInt(input.value);
+                if (!isNaN(val)) {
+                    input.value = val.toString().padStart(2, '0');
+                }
+            });
+        });
+    }
 };
 
 function textoInformativo() {
@@ -215,9 +227,9 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.getElementById("select-metodo").addEventListener("change", function () {
-    reiniciarVariables()
     metodo = document.getElementById("select-metodo").value;
     document.getElementById("selectMes").disabled = false;
+
     if (metodo === "1") {
         form.innerHTML = "";
         textoInformativo();
@@ -230,11 +242,9 @@ document.getElementById("select-metodo").addEventListener("change", function () 
         cargarPorHorasTrabajadas();
         calcularPorHorasTrabajadas();
     }
-    mostrarResultados();
 });
 
 document.getElementById("selectMes").addEventListener("change", function () {
-    reiniciarVariables()
     metodo = document.getElementById("select-metodo").value;
     form.innerHTML = "";
     mes = parseInt(this.value);
@@ -247,11 +257,11 @@ document.getElementById("selectMes").addEventListener("change", function () {
         calcularPorHorasTrabajadas();
 
     }
-    mostrarResultados();
 });
 
-// -------------------------- NUEVO BLOQUE---------------------------------------------------
-function reiniciarVariables() {
+function calcularPorEntradaSalida() {
+    cantDiasDelmes = new Date(anio, mes + 1, 0).getDate();
+
     arrayHoraEntrada = [];
     arrayMinutoEntrada = [];
     arrayHoraSalida = [];
@@ -259,158 +269,143 @@ function reiniciarVariables() {
     arrayHorasDiurnas = [];
     arrayHorasNocturnas = [];
     arrayCheckBoxFerDom = [];
-    arrayDiurnas = [];
-    arrayNocturnas = [];
     totalDiurnas = 0;
     totalNocturnas = 0;
     totalDFerdom = 0;
     totalNFerdom = 0;
     diasLibres = 0;
-}
 
-function validarInputs(horaEntrada, minutoEntrada, horaSalida, minutoSalida) {
-    const inputsLlenos =
-        horaEntrada.value !== "" &&
-        minutoEntrada.value !== "" &&
-        horaSalida.value !== "" &&
-        minutoSalida.value !== "";
+    for (let i = 0; i < cantDiasDelmes; i++) {
+        let c = i + 1;
 
-    const inputsVacios =
-        horaEntrada.value === "" &&
-        minutoEntrada.value === "" &&
-        horaSalida.value === "" &&
-        minutoSalida.value === "";
+        let inputHE = document.getElementById(`HE${c}`);
+        let inputME = document.getElementById(`ME${c}`);
+        let inputHS = document.getElementById(`HS${c}`);
+        let inputMS = document.getElementById(`MS${c}`);
 
-    if (!inputsLlenos && !inputsVacios) {
-        alert("Algunas casillas están incompletas. Intenta otra vez.")
-        return false;
-    } else {
-        arrayHoraEntrada.push(parseInt(horaEntrada.value) || 0);
-        arrayMinutoEntrada.push(parseInt(minutoEntrada.value) || 0);
-        arrayHoraSalida.push(parseInt(horaSalida.value) || 0);
-        arrayMinutoSalida.push(parseInt(minutoSalida.value) || 0);
-        return true;
-    }
-}
+        const inputsLlenos =
+            inputHE.value !== "" &&
+            inputME.value !== "" &&
+            inputHS.value !== "" &&
+            inputMS.value !== "";
 
+        const inputsVacios =
+            inputHE.value === "" &&
+            inputME.value === "" &&
+            inputHS.value === "" &&
+            inputMS.value === "";
 
-function diaLibre(posicion) {
-    diasLibres += 1;
-    arrayHoraEntrada[posicion] = 0;
-    arrayHoraSalida[posicion] = 0;
-    let checkbox = document.getElementById(`checkBoxId${posicion + 1}`);
-    checkbox?.checked ? arrayCheckBoxFerDom[posicion] = posicion + 1 : arrayCheckBoxFerDom[posicion] = 0
-}
-
-function salidaMenorEntrada(indice) {
-    if (arrayHoraSalida[indice] < arrayHoraEntrada[indice]) {
-        alert("La Hora de Salida no puede ser menor a la Entrada. Intenta otra vez.")
-        return true
-    } else {
-        return false
-    }
-}
-
-
-function unirHorasConMinutos(horaEntrada, minutoEntrada, horaSalida, minutoSalida, indice) {
-    minutoEntrada[indice] /= 60;
-    minutoSalida[indice] /= 60;
-    horaEntrada[indice] += parseFloat(minutoEntrada[indice].toFixed(2));
-    horaSalida[indice] += parseFloat(minutoSalida[indice].toFixed(2));
-}
-
-
-function diurnasNocturnasFerDom(indice) {
-
-    arrayCheckBoxFerDom[indice] = indice + 1;
-
-    if (arrayHoraSalida[indice] === 0) {
-        arrayHoraSalida[indice] = MEDIA_NOCHE;
-    }
-    salidaMenorEntrada(indice);
-    if (arrayHoraEntrada[indice] >= INICIO_DIURNO && arrayHoraEntrada[indice] < FIN_DIURNO) {
-        if (arrayHoraSalida[indice] <= FIN_DIURNO) {
-            arrayHorasDiurnas[indice] = arrayHoraSalida[indice] - arrayHoraEntrada[indice];
-            totalDFerdom += arrayHorasDiurnas[indice];
-            arrayHorasNocturnas[indice] = 0;
+        if (!inputsLlenos && !inputsVacios) {
+            alert("Algunas casillas están incompletas. Intenta otra vez.")
+            break;
         } else {
-            arrayHorasDiurnas[indice] = FIN_DIURNO - arrayHoraEntrada[indice];
-            arrayHorasNocturnas[indice] = arrayHoraSalida[indice] - FIN_DIURNO;
-            totalDFerdom += arrayHorasDiurnas[indice];
-            totalNFerdom += arrayHorasNocturnas[indice];
+            arrayHoraEntrada.push(parseInt(inputHE.value) || 0);
+            arrayMinutoEntrada.push(parseInt(inputME.value) || 0);
+            arrayHoraSalida.push(parseInt(inputHS.value) || 0);
+            arrayMinutoSalida.push(parseInt(inputMS.value) || 0);
         }
-    } else if ((arrayHoraEntrada[indice] >= FIN_DIURNO && arrayHoraEntrada[indice] < MEDIA_NOCHE)) {
-        arrayHorasNocturnas[indice] = arrayHoraSalida[indice] - arrayHoraEntrada[indice];
-        totalNFerdom += arrayHorasNocturnas[indice];
-        arrayHorasDiurnas[indice] = 0;
-    } else if (arrayHoraEntrada[indice] >= 0 && arrayHoraEntrada[indice] < INICIO_DIURNO) {
-        if (arrayHoraSalida[indice] === MEDIA_NOCHE) {
-            arrayHoraSalida[indice] = 0;
-        }
-        if (arrayHoraSalida[indice] <= INICIO_DIURNO) {
-            arrayHorasNocturnas[indice] = arrayHoraSalida[indice] - arrayHoraEntrada[indice];
-            totalNFerdom += arrayHorasNocturnas[indice];
-            arrayHorasDiurnas[indice] = 0;
+
+        arrayMinutoEntrada[i] /= 60;
+        arrayMinutoSalida[i] /= 60;
+        arrayHoraEntrada[i] += parseFloat(arrayMinutoEntrada[i].toFixed(2));
+        arrayHoraSalida[i] += parseFloat(arrayMinutoSalida[i].toFixed(2));
+
+        let checkbox = document.getElementById(`checkBoxId${c}`);
+
+        if (checkbox && checkbox.checked) {
+            arrayCheckBoxFerDom[i] = c;
+            if (arrayHoraEntrada[i] == 0 && arrayHoraSalida[i] == 0) {
+                diasLibres += 1;
+                arrayHorasDiurnas[i] = 0;
+                arrayHorasNocturnas[i] = 0;
+            } else {
+                if (arrayHoraSalida[i] === 0) {
+                    arrayHoraSalida[i] = 24;
+                }
+                if (arrayHoraSalida[i] < arrayHoraEntrada[i]) {
+                    alert("La Hora de Salida no puede ser menor a la Entrada. Intenta otra vez.")
+                    break;
+                }
+                if (arrayHoraEntrada[i] >= 6 && arrayHoraEntrada[i] < 20) {
+                    if (arrayHoraSalida[i] <= 20) {
+                        arrayHorasDiurnas[i] = arrayHoraSalida[i] - arrayHoraEntrada[i];
+                        totalDFerdom += arrayHorasDiurnas[i];
+                        arrayHorasNocturnas[i] = 0;
+                    } else {
+                        arrayHorasDiurnas[i] = 20 - arrayHoraEntrada[i];
+                        arrayHorasNocturnas[i] = arrayHoraSalida[i] - 20;
+                        totalDFerdom += arrayHorasDiurnas[i];
+                        totalNFerdom += arrayHorasNocturnas[i];
+                    }
+                } else if ((arrayHoraEntrada[i] >= 20 && arrayHoraEntrada[i] < 24)) {
+                    arrayHorasNocturnas[i] = arrayHoraSalida[i] - arrayHoraEntrada[i];
+                    totalNFerdom += arrayHorasNocturnas[i];
+                    arrayHorasDiurnas[i] = 0;
+                } else if (arrayHoraEntrada[i] >= 0 && arrayHoraEntrada[i] < 6) {
+                    if (arrayHoraSalida[i] === 24) {
+                        arrayHoraSalida[i] = 0;
+                    }
+                    if (arrayHoraSalida[i] <= 6) {
+                        arrayHorasNocturnas[i] = arrayHoraSalida[i] - arrayHoraEntrada[i];
+                        totalNFerdom += arrayHorasNocturnas[i];
+                        arrayHorasDiurnas[i] = 0;
+                    } else {
+                        arrayHorasNocturnas[i] = 6 - arrayHoraEntrada[i];
+                        arrayHorasDiurnas[i] = arrayHoraSalida[i] - 6;
+                        totalDFerdom += arrayHorasDiurnas[i];
+                        totalNFerdom += arrayHorasNocturnas[i];
+                    }
+                }
+            }
         } else {
-            arrayHorasNocturnas[indice] = INICIO_DIURNO - arrayHoraEntrada[indice];
-            arrayHorasDiurnas[indice] = arrayHoraSalida[indice] - INICIO_DIURNO;
-            totalDFerdom += arrayHorasDiurnas[indice];
-            totalNFerdom += arrayHorasNocturnas[indice];
-        }
-    }
-}
-
-function diurnasNocturnasNormales(indice) {
-    arrayCheckBoxFerDom[indice] = 0;
-
-    if (arrayHoraEntrada[indice] == 0 && arrayHoraSalida[indice] == 0) {
-        diasLibres += 1;
-        arrayHorasDiurnas[indice] = 0;
-        arrayHorasNocturnas[indice] = 0;
-    } else {
-        if (arrayHoraSalida[indice] === 0) {
-            arrayHoraSalida[indice] = MEDIA_NOCHE;
-        }
-
-        salidaMenorEntrada(indice);
-
-        if (arrayHoraEntrada[indice] >= INICIO_DIURNO && arrayHoraEntrada[indice] < FIN_DIURNO) {
-            if (arrayHoraSalida[indice] <= FIN_DIURNO) {
-                arrayHorasDiurnas[indice] = arrayHoraSalida[indice] - arrayHoraEntrada[indice];
-                totalDiurnas += arrayHorasDiurnas[indice];
-
-                arrayHorasNocturnas[indice] = 0;
+            arrayCheckBoxFerDom[i] = 0;
+            if (arrayHoraEntrada[i] == 0 && arrayHoraSalida[i] == 0) {
+                diasLibres += 1;
+                arrayHorasDiurnas[i] = 0;
+                arrayHorasNocturnas[i] = 0;
             } else {
-                arrayHorasDiurnas[indice] = FIN_DIURNO - arrayHoraEntrada[indice];
-                arrayHorasNocturnas[indice] = arrayHoraSalida[indice] - FIN_DIURNO;
-                totalDiurnas += arrayHorasDiurnas[indice];
-                totalNocturnas += arrayHorasNocturnas[indice];
-            }
-        } else if ((arrayHoraEntrada[indice] >= FIN_DIURNO && arrayHoraEntrada[indice] < MEDIA_NOCHE)) {
-            arrayHorasNocturnas[indice] = arrayHoraSalida[indice] - arrayHoraEntrada[indice];
-            totalNocturnas += arrayHorasNocturnas[indice];
+                if (arrayHoraSalida[i] === 0) {
+                    arrayHoraSalida[i] = 24;
+                }
+                if (arrayHoraSalida[i] < arrayHoraEntrada[i]) {
+                    alert("La Hora de Salida no puede ser menor a la Entrada. Intenta otra vez.")
+                    break;
+                }
+                if (arrayHoraEntrada[i] >= 6 && arrayHoraEntrada[i] < 20) {
+                    if (arrayHoraSalida[i] <= 20) {
+                        arrayHorasDiurnas[i] = arrayHoraSalida[i] - arrayHoraEntrada[i];
+                        totalDiurnas += arrayHorasDiurnas[i];
 
-            arrayHorasDiurnas[indice] = 0;
-        } else if (arrayHoraEntrada[indice] >= 0 && arrayHoraEntrada[indice] < INICIO_DIURNO) {
-            if (arrayHoraSalida[indice] === MEDIA_NOCHE) {
-                arrayHoraSalida[indice] = 0;
-            }
-            if (arrayHoraSalida[indice] <= INICIO_DIURNO) {
-                arrayHorasNocturnas[indice] = arrayHoraSalida[indice] - arrayHoraEntrada[indice];
-                totalNocturnas += arrayHorasNocturnas[indice];
-                arrayHorasDiurnas[indice] = 0;
-            } else {
-                arrayHorasNocturnas[indice] = INICIO_DIURNO - arrayHoraEntrada[indice];
-                arrayHorasDiurnas[indice] = arrayHoraSalida[indice] - INICIO_DIURNO;
-                totalDiurnas += arrayHorasDiurnas[indice];
-                totalNocturnas += arrayHorasNocturnas[indice];
+                        arrayHorasNocturnas[i] = 0;
+                    } else {
+                        arrayHorasDiurnas[i] = 20 - arrayHoraEntrada[i];
+                        arrayHorasNocturnas[i] = arrayHoraSalida[i] - 20;
+                        totalDiurnas += arrayHorasDiurnas[i];
+                        totalNocturnas += arrayHorasNocturnas[i];
+                    }
+                } else if ((arrayHoraEntrada[i] >= 20 && arrayHoraEntrada[i] < 24)) {
+                    arrayHorasNocturnas[i] = arrayHoraSalida[i] - arrayHoraEntrada[i];
+                    totalNocturnas += arrayHorasNocturnas[i];
+
+                    arrayHorasDiurnas[i] = 0;
+                } else if (arrayHoraEntrada[i] >= 0 && arrayHoraEntrada[i] < 6) {
+                    if (arrayHoraSalida[i] === 24) {
+                        arrayHoraSalida[i] = 0;
+                    }
+                    if (arrayHoraSalida[i] <= 6) {
+                        arrayHorasNocturnas[i] = arrayHoraSalida[i] - arrayHoraEntrada[i];
+                        totalNocturnas += arrayHorasNocturnas[i];
+                        arrayHorasDiurnas[i] = 0;
+                    } else {
+                        arrayHorasNocturnas[i] = 6 - arrayHoraEntrada[i];
+                        arrayHorasDiurnas[i] = arrayHoraSalida[i] - 6;
+                        totalDiurnas += arrayHorasDiurnas[i];
+                        totalNocturnas += arrayHorasNocturnas[i];
+                    }
+                }
             }
         }
     }
-}
-
-
-function mostrarResultados() {
     totalDiurnas = parseFloat(totalDiurnas.toFixed(1));
     totalNocturnas = parseFloat(totalNocturnas.toFixed(1));
     totalDFerdom = parseFloat(totalDFerdom.toFixed(1));
@@ -436,31 +431,20 @@ function mostrarResultados() {
     document.getElementById("spanTotalNeto").textContent = formato.format(Math.round(total));
 }
 
-function calcularPorEntradaSalida() {
-    cantDiasDelmes = new Date(anio, mes + 1, 0).getDate();
-    for (let i = 0; i < cantDiasDelmes; i++) {
-        let c = i + 1;
-        let inputHE = document.getElementById(`HE${c}`);
-        let inputME = document.getElementById(`ME${c}`);
-        let inputHS = document.getElementById(`HS${c}`);
-        let inputMS = document.getElementById(`MS${c}`);
-
-        validarInputs(inputHE, inputME, inputHS, inputMS);
-
-        unirHorasConMinutos(arrayHoraEntrada, arrayMinutoEntrada, arrayHoraSalida, arrayMinutoSalida, i);
-
-        let checkbox = document.getElementById(`checkBoxId${c}`);
-
-        if (arrayHoraEntrada[i] == 0 && arrayHoraSalida[i] == 0) {
-            diaLibre(i);
-        } else {
-            checkbox?.checked ? diurnasNocturnasFerDom(i) : diurnasNocturnasNormales(i);
-        }
-    }
-}
-
 function calcularPorHorasTrabajadas() {
     cantDiasDelmes = new Date(anio, mes + 1, 0).getDate();
+
+    arrayDiurnas = [];
+    arrayNocturnas = [];
+    arrayHorasDiurnas = 0;
+    arrayHorasNocturnas = 0;
+    arrayCheckBoxFerDom = [];
+    totalDiurnas = 0;
+    totalNocturnas = 0;
+    totalDFerdom = 0;
+    totalNFerdom = 0;
+    diasLibres = 0;
+
     for (let i = 0; i < cantDiasDelmes; i++) {
         let c = i + 1;
         let inputHD = document.getElementById(`HD${c}`);
@@ -493,12 +477,32 @@ function calcularPorHorasTrabajadas() {
             }
         }
     }
+    totalDiurnas = parseFloat(totalDiurnas.toFixed(1));
+    totalNocturnas = parseFloat(totalNocturnas.toFixed(1));
+    totalDFerdom = parseFloat(totalDFerdom.toFixed(1));
+    totalNFerdom = parseFloat(totalNFerdom.toFixed(1));
+    let cobroDiurnas = totalDiurnas * jornal[0]
+    let cobroNocturnas = totalNocturnas * jornal[1]
+    let cobroDiaFerDom = totalDFerdom * jornal[2];
+    let cobroNocheFerDom = totalNFerdom * jornal[3];
+    let totalBruto = cobroDiurnas + cobroNocturnas + cobroDiaFerDom + cobroNocheFerDom;
+    let descIPS = totalBruto * 0.09;
+    let total = totalBruto - descIPS;
+    document.getElementById("spanTotalDiurnas").textContent = totalDiurnas;
+    document.getElementById("spanTotalNocturnas").textContent = totalNocturnas;
+    document.getElementById("spanTotalDFerDom").textContent = totalDFerdom;
+    document.getElementById("spanTotalNFerDom").textContent = totalNFerdom;
+    document.getElementById("spanCobroDiurnas").textContent = formato.format(Math.round(cobroDiurnas));
+    document.getElementById("spanCobroNocturnas").textContent = formato.format(Math.round(cobroNocturnas));
+    document.getElementById("spanCobroDiaFerDom").textContent = formato.format(Math.round(cobroDiaFerDom));
+    document.getElementById("spanCobroNocheFerDom").textContent = formato.format(Math.round(cobroNocheFerDom));
+    document.getElementById("spanDescIPS").textContent = formato.format(Math.round(descIPS));
+    document.getElementById("spandiasLibres").textContent = diasLibres;
+    document.getElementById("spanTotalBruto").textContent = formato.format(Math.round(totalBruto));
+    document.getElementById("spanTotalNeto").textContent = formato.format(Math.round(total));
 }
 
-// FIN DEL NUEVO BLOQUE---------------------------------------------------
-
 function calcular() {
-    reiniciarVariables();
     if (metodo === "2") {
         calcularPorEntradaSalida();
     } else if (metodo === "3") {
@@ -506,7 +510,6 @@ function calcular() {
     } else {
         alert("Primero selecciona un método de carga.");
     }
-    mostrarResultados();
 }
 
 function reiniciar() {
@@ -631,7 +634,6 @@ function Export() {
 }
 
 document.getElementById("importarJson").addEventListener("change", function (event) {
-    reiniciarVariables();
     const file = event.target.files[0];
     if (!file) return;
 
@@ -672,8 +674,6 @@ document.getElementById("importarJson").addEventListener("change", function (eve
                     }
                 }
                 calcularPorEntradaSalida();
-                mostrarResultados();
-
                 alert(`Datos cargados correctamente: ${nombreArchivo}`);
             } catch (error) {
                 console.log("Error al leer archivo JSON:", error)
@@ -708,8 +708,6 @@ document.getElementById("importarJson").addEventListener("change", function (eve
                     }
                 }
                 calcularPorHorasTrabajadas();
-                mostrarResultados();
-
                 alert(`Datos cargados correctamente: ${nombreArchivo}`);
             } catch (error) {
                 console.log("Error al leer archivo JSON:", error)
@@ -720,6 +718,8 @@ document.getElementById("importarJson").addEventListener("change", function (eve
         alert("El archivo no cumple el formato requerido.");
 
     }
+
+
     reader.readAsText(file);
 });
 
