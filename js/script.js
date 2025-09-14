@@ -14,7 +14,6 @@ let formato = new Intl.NumberFormat('es-PY', {
 });
 
 const form = document.querySelector("form");
-const divTitulos = document.querySelector(".divTitulos");
 
 const fechaActual = new Date();
 const anio = fechaActual.getFullYear();
@@ -22,10 +21,6 @@ document.getElementById("selectMes").value = fechaActual.getMonth();
 var mes = parseInt(document.getElementById("selectMes").value);
 let meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
 let jornal = [13938, 18119, 27875, 36238]
-
-const INICIO_DIURNO = 6;
-const FIN_DIURNO = 20;
-const MEDIA_NOCHE = 24;
 
 document.getElementById("spanJornalDiurno").textContent = formato.format(jornal[0]);
 document.getElementById("spanJornalNocturno").textContent = formato.format(jornal[1]);
@@ -200,7 +195,6 @@ function cargarPorHorasTrabajadas() {
             checkboxDom.disabled = true;
         }
     }
-    mostrarResultados();
 };
 
 function textoInformativo() {
@@ -215,42 +209,38 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.getElementById("select-metodo").addEventListener("change", function () {
-    reiniciarVariables()
     metodo = document.getElementById("select-metodo").value;
     document.getElementById("selectMes").disabled = false;
-    if (metodo === "1") {
+    if (metodo === "0") {
         form.innerHTML = "";
         textoInformativo();
-    } else if (metodo === "2") {
+    } else if (metodo === "1") {
         form.innerHTML = "";
         cargarPorEntradaSalida();
-        calcularPorEntradaSalida();
+        // calcularPorEntradaSalida();
     } else {
         form.innerHTML = "";
         cargarPorHorasTrabajadas();
-        calcularPorHorasTrabajadas();
+        // calcularPorHorasTrabajadas();
     }
-    mostrarResultados();
+    calcular()
 });
 
 document.getElementById("selectMes").addEventListener("change", function () {
-    reiniciarVariables()
     metodo = document.getElementById("select-metodo").value;
     form.innerHTML = "";
     mes = parseInt(this.value);
-    if (metodo === "2") {
+    if (metodo === "1") {
         cargarPorEntradaSalida();
-        calcularPorEntradaSalida();
+        // calcularPorEntradaSalida();
 
-    } else if (metodo === "3") {
+    } else if (metodo === "2") {
         cargarPorHorasTrabajadas();
-        calcularPorHorasTrabajadas();
-
+        // calcularPorHorasTrabajadas();
     }
-    mostrarResultados();
+    calcular()
 });
 
-// -------------------------- NUEVO BLOQUE---------------------------------------------------
 function reiniciarVariables() {
     arrayHoraEntrada = [];
     arrayMinutoEntrada = [];
@@ -267,148 +257,6 @@ function reiniciarVariables() {
     totalNFerdom = 0;
     diasLibres = 0;
 }
-
-function validarInputs(horaEntrada, minutoEntrada, horaSalida, minutoSalida) {
-    const inputsLlenos =
-        horaEntrada.value !== "" &&
-        minutoEntrada.value !== "" &&
-        horaSalida.value !== "" &&
-        minutoSalida.value !== "";
-
-    const inputsVacios =
-        horaEntrada.value === "" &&
-        minutoEntrada.value === "" &&
-        horaSalida.value === "" &&
-        minutoSalida.value === "";
-
-    if (!inputsLlenos && !inputsVacios) {
-        alert("Algunas casillas están incompletas. Intenta otra vez.")
-        return false;
-    } else {
-        arrayHoraEntrada.push(parseInt(horaEntrada.value) || 0);
-        arrayMinutoEntrada.push(parseInt(minutoEntrada.value) || 0);
-        arrayHoraSalida.push(parseInt(horaSalida.value) || 0);
-        arrayMinutoSalida.push(parseInt(minutoSalida.value) || 0);
-        return true;
-    }
-}
-
-
-function diaLibre(posicion) {
-    diasLibres += 1;
-    arrayHoraEntrada[posicion] = 0;
-    arrayHoraSalida[posicion] = 0;
-    let checkbox = document.getElementById(`checkBoxId${posicion + 1}`);
-    checkbox?.checked ? arrayCheckBoxFerDom[posicion] = posicion + 1 : arrayCheckBoxFerDom[posicion] = 0
-}
-
-function salidaMenorEntrada(indice) {
-    if (arrayHoraSalida[indice] < arrayHoraEntrada[indice]) {
-        alert("La Hora de Salida no puede ser menor a la Entrada. Intenta otra vez.")
-        return true
-    } else {
-        return false
-    }
-}
-
-
-function unirHorasConMinutos(horaEntrada, minutoEntrada, horaSalida, minutoSalida, indice) {
-    minutoEntrada[indice] /= 60;
-    minutoSalida[indice] /= 60;
-    horaEntrada[indice] += parseFloat(minutoEntrada[indice].toFixed(2));
-    horaSalida[indice] += parseFloat(minutoSalida[indice].toFixed(2));
-}
-
-
-function diurnasNocturnasFerDom(indice) {
-
-    arrayCheckBoxFerDom[indice] = indice + 1;
-
-    if (arrayHoraSalida[indice] === 0) {
-        arrayHoraSalida[indice] = MEDIA_NOCHE;
-    }
-    salidaMenorEntrada(indice);
-    if (arrayHoraEntrada[indice] >= INICIO_DIURNO && arrayHoraEntrada[indice] < FIN_DIURNO) {
-        if (arrayHoraSalida[indice] <= FIN_DIURNO) {
-            arrayHorasDiurnas[indice] = arrayHoraSalida[indice] - arrayHoraEntrada[indice];
-            totalDFerdom += arrayHorasDiurnas[indice];
-            arrayHorasNocturnas[indice] = 0;
-        } else {
-            arrayHorasDiurnas[indice] = FIN_DIURNO - arrayHoraEntrada[indice];
-            arrayHorasNocturnas[indice] = arrayHoraSalida[indice] - FIN_DIURNO;
-            totalDFerdom += arrayHorasDiurnas[indice];
-            totalNFerdom += arrayHorasNocturnas[indice];
-        }
-    } else if ((arrayHoraEntrada[indice] >= FIN_DIURNO && arrayHoraEntrada[indice] < MEDIA_NOCHE)) {
-        arrayHorasNocturnas[indice] = arrayHoraSalida[indice] - arrayHoraEntrada[indice];
-        totalNFerdom += arrayHorasNocturnas[indice];
-        arrayHorasDiurnas[indice] = 0;
-    } else if (arrayHoraEntrada[indice] >= 0 && arrayHoraEntrada[indice] < INICIO_DIURNO) {
-        if (arrayHoraSalida[indice] === MEDIA_NOCHE) {
-            arrayHoraSalida[indice] = 0;
-        }
-        if (arrayHoraSalida[indice] <= INICIO_DIURNO) {
-            arrayHorasNocturnas[indice] = arrayHoraSalida[indice] - arrayHoraEntrada[indice];
-            totalNFerdom += arrayHorasNocturnas[indice];
-            arrayHorasDiurnas[indice] = 0;
-        } else {
-            arrayHorasNocturnas[indice] = INICIO_DIURNO - arrayHoraEntrada[indice];
-            arrayHorasDiurnas[indice] = arrayHoraSalida[indice] - INICIO_DIURNO;
-            totalDFerdom += arrayHorasDiurnas[indice];
-            totalNFerdom += arrayHorasNocturnas[indice];
-        }
-    }
-}
-
-function diurnasNocturnasNormales(indice) {
-    arrayCheckBoxFerDom[indice] = 0;
-
-    if (arrayHoraEntrada[indice] == 0 && arrayHoraSalida[indice] == 0) {
-        diasLibres += 1;
-        arrayHorasDiurnas[indice] = 0;
-        arrayHorasNocturnas[indice] = 0;
-    } else {
-        if (arrayHoraSalida[indice] === 0) {
-            arrayHoraSalida[indice] = MEDIA_NOCHE;
-        }
-
-        salidaMenorEntrada(indice);
-
-        if (arrayHoraEntrada[indice] >= INICIO_DIURNO && arrayHoraEntrada[indice] < FIN_DIURNO) {
-            if (arrayHoraSalida[indice] <= FIN_DIURNO) {
-                arrayHorasDiurnas[indice] = arrayHoraSalida[indice] - arrayHoraEntrada[indice];
-                totalDiurnas += arrayHorasDiurnas[indice];
-
-                arrayHorasNocturnas[indice] = 0;
-            } else {
-                arrayHorasDiurnas[indice] = FIN_DIURNO - arrayHoraEntrada[indice];
-                arrayHorasNocturnas[indice] = arrayHoraSalida[indice] - FIN_DIURNO;
-                totalDiurnas += arrayHorasDiurnas[indice];
-                totalNocturnas += arrayHorasNocturnas[indice];
-            }
-        } else if ((arrayHoraEntrada[indice] >= FIN_DIURNO && arrayHoraEntrada[indice] < MEDIA_NOCHE)) {
-            arrayHorasNocturnas[indice] = arrayHoraSalida[indice] - arrayHoraEntrada[indice];
-            totalNocturnas += arrayHorasNocturnas[indice];
-
-            arrayHorasDiurnas[indice] = 0;
-        } else if (arrayHoraEntrada[indice] >= 0 && arrayHoraEntrada[indice] < INICIO_DIURNO) {
-            if (arrayHoraSalida[indice] === MEDIA_NOCHE) {
-                arrayHoraSalida[indice] = 0;
-            }
-            if (arrayHoraSalida[indice] <= INICIO_DIURNO) {
-                arrayHorasNocturnas[indice] = arrayHoraSalida[indice] - arrayHoraEntrada[indice];
-                totalNocturnas += arrayHorasNocturnas[indice];
-                arrayHorasDiurnas[indice] = 0;
-            } else {
-                arrayHorasNocturnas[indice] = INICIO_DIURNO - arrayHoraEntrada[indice];
-                arrayHorasDiurnas[indice] = arrayHoraSalida[indice] - INICIO_DIURNO;
-                totalDiurnas += arrayHorasDiurnas[indice];
-                totalNocturnas += arrayHorasNocturnas[indice];
-            }
-        }
-    }
-}
-
 
 function mostrarResultados() {
     totalDiurnas = parseFloat(totalDiurnas.toFixed(1));
@@ -436,31 +284,147 @@ function mostrarResultados() {
     document.getElementById("spanTotalNeto").textContent = formato.format(Math.round(total));
 }
 
-function calcularPorEntradaSalida() {
-    cantDiasDelmes = new Date(anio, mes + 1, 0).getDate();
-    for (let i = 0; i < cantDiasDelmes; i++) {
-        let c = i + 1;
-        let inputHE = document.getElementById(`HE${c}`);
-        let inputME = document.getElementById(`ME${c}`);
-        let inputHS = document.getElementById(`HS${c}`);
-        let inputMS = document.getElementById(`MS${c}`);
+//  *************** NUEVO BLOQUE *************** 
+let inputsLlenos, inputsVacios;
 
-        validarInputs(inputHE, inputME, inputHS, inputMS);
+const INICIO_DIURNAS = 6;
+const INICIO_NOCTURNAS = 20;
+const MEDIA_NOCHE = 24;
 
-        unirHorasConMinutos(arrayHoraEntrada, arrayMinutoEntrada, arrayHoraSalida, arrayMinutoSalida, i);
+let inputHE, inputME, inputHS, inputMS;
 
-        let checkbox = document.getElementById(`checkBoxId${c}`);
+function validarYCargarHoras(indice) {
+    let inputHE = document.getElementById(`HE${indice + 1}`);
+    let inputME = document.getElementById(`ME${indice + 1}`);
+    let inputHS = document.getElementById(`HS${indice + 1}`);
+    let inputMS = document.getElementById(`MS${indice + 1}`);
 
-        if (arrayHoraEntrada[i] == 0 && arrayHoraSalida[i] == 0) {
-            diaLibre(i);
+    inputsLlenos =
+        inputHE.value !== "" &&
+        inputME.value !== "" &&
+        inputHS.value !== "" &&
+        inputMS.value !== "";
+
+    inputsVacios =
+        inputHE.value === "" &&
+        inputME.value === "" &&
+        inputHS.value === "" &&
+        inputMS.value === "";
+
+    if (!inputsLlenos && !inputsVacios) {
+        alert("Algunas casillas están incompletas. Intenta otra vez.")
+    } else {
+        arrayHoraEntrada.push(parseInt(inputHE.value) || 0);
+        arrayMinutoEntrada.push(parseInt(inputME.value) || 0);
+        arrayHoraSalida.push(parseInt(inputHS.value) || 0);
+        arrayMinutoSalida.push(parseInt(inputMS.value) || 0);
+        arrayMinutoEntrada[indice] /= 60;
+        arrayMinutoSalida[indice] /= 60;
+        arrayHoraEntrada[indice] += parseFloat(arrayMinutoEntrada[indice].toFixed(2));
+        arrayHoraSalida[indice] += parseFloat(arrayMinutoSalida[indice].toFixed(2));
+    }
+}
+
+function esDiaLibre(indice) {
+    diasLibres += 1;
+    arrayHorasDiurnas[indice] = 0;
+    arrayHorasNocturnas[indice] = 0;
+}
+
+function esFeriadoDomingo(indice, valor) {
+    if (arrayHoraEntrada[indice] >= INICIO_DIURNAS && arrayHoraEntrada[indice] < INICIO_NOCTURNAS) {
+        if (arrayHoraSalida[indice] <= INICIO_NOCTURNAS) {
+            arrayHorasDiurnas[indice] = arrayHoraSalida[indice] - arrayHoraEntrada[indice];
+            totalDFerdom += arrayHorasDiurnas[indice];
+            arrayHorasNocturnas[indice] = 0;
         } else {
-            checkbox?.checked ? diurnasNocturnasFerDom(i) : diurnasNocturnasNormales(i);
+            arrayHorasDiurnas[indice] = INICIO_NOCTURNAS - arrayHoraEntrada[indice];
+            arrayHorasNocturnas[indice] = arrayHoraSalida[indice] - INICIO_NOCTURNAS;
+            totalDFerdom += arrayHorasDiurnas[indice];
+            totalNFerdom += arrayHorasNocturnas[indice];
+        }
+    } else if ((arrayHoraEntrada[indice] >= INICIO_NOCTURNAS && arrayHoraEntrada[indice] < MEDIA_NOCHE)) {
+        arrayHorasNocturnas[indice] = arrayHoraSalida[indice] - arrayHoraEntrada[indice];
+        totalNFerdom += arrayHorasNocturnas[indice];
+        arrayHorasDiurnas[indice] = 0;
+    } else if (arrayHoraEntrada[indice] >= 0 && arrayHoraEntrada[indice] < INICIO_DIURNAS) {
+        if (arrayHoraSalida[indice] === MEDIA_NOCHE) {
+            arrayHoraSalida[indice] = 0;
+        }
+        if (arrayHoraSalida[indice] <= INICIO_DIURNAS) {
+            arrayHorasNocturnas[indice] = arrayHoraSalida[indice] - arrayHoraEntrada[indice];
+            totalNFerdom += arrayHorasNocturnas[indice];
+            arrayHorasDiurnas[indice] = 0;
+        } else {
+            arrayHorasNocturnas[indice] = INICIO_DIURNAS - arrayHoraEntrada[indice];
+            arrayHorasDiurnas[indice] = arrayHoraSalida[indice] - INICIO_DIURNAS;
+            totalDFerdom += arrayHorasDiurnas[indice];
+            totalNFerdom += arrayHorasNocturnas[indice];
         }
     }
 }
 
-function calcularPorHorasTrabajadas() {
+function esDiaNormal(indice) {
+    if (arrayHoraEntrada[indice] >= INICIO_DIURNAS && arrayHoraEntrada[indice] < INICIO_NOCTURNAS) {
+        if (arrayHoraSalida[indice] <= INICIO_NOCTURNAS) {
+            arrayHorasDiurnas[indice] = arrayHoraSalida[indice] - arrayHoraEntrada[indice];
+            totalDiurnas += arrayHorasDiurnas[indice];
+            arrayHorasNocturnas[indice] = 0;
+        } else {
+            arrayHorasDiurnas[indice] = INICIO_NOCTURNAS - arrayHoraEntrada[indice];
+            arrayHorasNocturnas[indice] = arrayHoraSalida[indice] - INICIO_NOCTURNAS;
+            totalDiurnas += arrayHorasDiurnas[indice];
+            totalNocturnas += arrayHorasNocturnas[indice];
+        }
+    } else if ((arrayHoraEntrada[indice] >= INICIO_NOCTURNAS && arrayHoraEntrada[indice] < MEDIA_NOCHE)) {
+        arrayHorasNocturnas[indice] = arrayHoraSalida[indice] - arrayHoraEntrada[indice];
+        totalNocturnas += arrayHorasNocturnas[indice];
+
+        arrayHorasDiurnas[indice] = 0;
+    } else if (arrayHoraEntrada[indice] >= 0 && arrayHoraEntrada[indice] < INICIO_DIURNAS) {
+        if (arrayHoraSalida[indice] === MEDIA_NOCHE) {
+            arrayHoraSalida[indice] = 0;
+        }
+        if (arrayHoraSalida[indice] <= INICIO_DIURNAS) {
+            arrayHorasNocturnas[indice] = arrayHoraSalida[indice] - arrayHoraEntrada[indice];
+            totalNocturnas += arrayHorasNocturnas[indice];
+            arrayHorasDiurnas[indice] = 0;
+        } else {
+            arrayHorasNocturnas[indice] = INICIO_DIURNAS - arrayHoraEntrada[indice];
+            arrayHorasDiurnas[indice] = arrayHoraSalida[indice] - INICIO_DIURNAS;
+            totalDiurnas += arrayHorasDiurnas[indice];
+            totalNocturnas += arrayHorasNocturnas[indice];
+        }
+    }
+}
+
+function calcularPorEntradaSalida() {
     cantDiasDelmes = new Date(anio, mes + 1, 0).getDate();
+    reiniciarVariables();
+    for (let i = 0; i < cantDiasDelmes; i++) {
+        let c = i + 1;
+        validarYCargarHoras(i);
+        if (arrayHoraSalida[i] === 0) arrayHoraSalida[i] = MEDIA_NOCHE;
+        if (arrayHoraSalida[i] < arrayHoraEntrada[i]) {
+            alert("La hora de salida no puede ser menor a la entrada.")
+            break;
+        } else {
+            let checkbox = document.getElementById(`checkBoxId${c}`);
+            checkbox.checked ? arrayCheckBoxFerDom[i] = c : arrayCheckBoxFerDom[i] = 0;
+            if (arrayHoraEntrada[i] == 0 && arrayHoraSalida[i] == MEDIA_NOCHE) {
+                esDiaLibre(i);
+            } else {
+                checkbox.checked ? esFeriadoDomingo(i, c) : esDiaNormal(i);
+            }
+        }
+    }
+    mostrarResultados();
+}
+
+function calcularPorHorasTrabajadas() {
+    reiniciarVariables();
+    cantDiasDelmes = new Date(anio, mes + 1, 0).getDate();
+
     for (let i = 0; i < cantDiasDelmes; i++) {
         let c = i + 1;
         let inputHD = document.getElementById(`HD${c}`);
@@ -493,20 +457,17 @@ function calcularPorHorasTrabajadas() {
             }
         }
     }
+    mostrarResultados();
 }
 
-// FIN DEL NUEVO BLOQUE---------------------------------------------------
-
 function calcular() {
-    reiniciarVariables();
-    if (metodo === "2") {
+    if (metodo === "1") {
         calcularPorEntradaSalida();
-    } else if (metodo === "3") {
+    } else if (metodo === "2") {
         calcularPorHorasTrabajadas();
     } else {
         alert("Primero selecciona un método de carga.");
     }
-    mostrarResultados();
 }
 
 function reiniciar() {
@@ -522,8 +483,7 @@ function imprimir() {
 
 function guardar() {
     metodo = document.getElementById("select-metodo").value;
-
-    if (metodo === "2") {
+    if (metodo === "1") {
         calcular();
         const datos = {
             Hora_De_Entrada: arrayHoraEntrada,
@@ -538,7 +498,7 @@ function guardar() {
         link.click();
         URL.revokeObjectURL(link.href);
 
-    } else if (metodo === "3") {
+    } else if (metodo === "2") {
         calcular();
         const datos = {
             Horas_Diurnas: arrayDiurnas,
@@ -546,7 +506,7 @@ function guardar() {
             arrayCheckBoxFerDom: arrayCheckBoxFerDom
         };
         const jsonDatos = JSON.stringify(datos, null, 2);
-        const blob = new Blob([jsonDatos], { type: "aplication/json" });
+        const blob = new Blob([jsonDatos], { type: "application/json" });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = `${meses[mes]}_${anio}_horas_trabajadas.json`;
@@ -557,168 +517,173 @@ function guardar() {
     }
 }
 
+function exportEntradaSalida() {
+    calcularPorEntradaSalida();
+    const horasExcel = [];
+    const tags = [];
+    for (let i = 0; i < cantDiasDelmes; i++) {
+        tags.push("D");
+        tags.push("N");
+        horasExcel.push(arrayHorasDiurnas[i])
+        horasExcel.push(arrayHorasNocturnas[i])
+    }
+
+    const matriz = [arrayDia, arrayDiasDeLaSemana, tags, horasExcel]
+    const worksheet = XLSX.utils.aoa_to_sheet(matriz);
+
+    worksheet['!merges'] = [];
+    for (let i = 0; i < arrayDiasDeLaSemana.length; i++) {
+        worksheet['!merges'].push({
+            s: { r: 1, c: i * 2 },
+            e: { r: 1, c: i * 2 + 1 }
+        });
+        worksheet['!merges'].push({
+            s: { r: 0, c: i * 2 },
+            e: { r: 0, c: i * 2 + 1 }
+        });
+    };
+    crearYDescargarExcel(worksheet)
+}
+
+function exportHorasTrabajadas() {
+    calcularPorHorasTrabajadas();
+    const horasExcel = [];
+    const tags = [];
+    for (let i = 0; i < cantDiasDelmes; i++) {
+        tags.push("D");
+        tags.push("N");
+        horasExcel.push(arrayDiurnas[i])
+        horasExcel.push(arrayNocturnas[i])
+    }
+
+    const matriz = [arrayDia, arrayDiasDeLaSemana, tags, horasExcel]
+    const worksheet = XLSX.utils.aoa_to_sheet(matriz);
+
+    worksheet['!merges'] = [];
+    for (let i = 0; i < arrayDiasDeLaSemana.length; i++) {
+        worksheet['!merges'].push({
+            s: { r: 1, c: i * 2 },
+            e: { r: 1, c: i * 2 + 1 }
+        });
+        worksheet['!merges'].push({
+            s: { r: 0, c: i * 2 },
+            e: { r: 0, c: i * 2 + 1 }
+        });
+    };
+    crearYDescargarExcel(worksheet)
+}
+
+function pedirNombre() { }
+
+function crearYDescargarExcel(worksheet) {
+    let name = 'a';
+    do {
+        name = prompt('Ingresa tu nombre y apellido, por favor.')
+        name = name.trim().replace(/\s+/g, '_');
+    } while (!name)
+    workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, `Horas_${meses[mes]}_${anio}`);
+    XLSX.writeFile(workbook, `JornApp_Horas_${meses[mes]}_${anio}_${name}.xlsx`);
+}
+
 function Export() {
     metodo = document.getElementById("select-metodo").value;
-    if (metodo === "2") {
-        calcularPorEntradaSalida();
-        let name = '';
-        while (!name) {
-            name = prompt('Ingresa tu nombre y apellido, por favor.')
-            name = name.trim().replace(/\s+/g, '_');
-        }
-        const horasExcel = [];
-        const tags = [];
-        for (let i = 0; i < cantDiasDelmes; i++) {
-            tags.push("D");
-            tags.push("N");
-            horasExcel.push(arrayHorasDiurnas[i])
-            horasExcel.push(arrayHorasNocturnas[i])
-        }
-
-        const matriz = [arrayDia, arrayDiasDeLaSemana, tags, horasExcel]
-        const worksheet = XLSX.utils.aoa_to_sheet(matriz);
-
-        worksheet['!merges'] = [];
-        for (let i = 0; i < arrayDiasDeLaSemana.length; i++) {
-            worksheet['!merges'].push({
-                s: { r: 1, c: i * 2 },
-                e: { r: 1, c: i * 2 + 1 }
-            });
-            worksheet['!merges'].push({
-                s: { r: 0, c: i * 2 },
-                e: { r: 0, c: i * 2 + 1 }
-            });
-        };
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, `Horas_${meses[mes]}_${anio}`);
-        XLSX.writeFile(workbook, `JornApp_Horas_${meses[mes]}_${anio}_${name}.xlsx`);
-    } else if (metodo === "3") {
-        calcularPorHorasTrabajadas();
-        let name = '';
-        while (!name) {
-            name = prompt('Ingresa tu nombre y apellido, por favor.')
-            name = name.trim().replace(/\s+/g, '_');
-        }
-        const horasExcel = [];
-        const tags = [];
-        for (let i = 0; i < cantDiasDelmes; i++) {
-            tags.push("D");
-            tags.push("N");
-            horasExcel.push(arrayDiurnas[i])
-            horasExcel.push(arrayNocturnas[i])
-        }
-
-        const matriz = [arrayDia, arrayDiasDeLaSemana, tags, horasExcel]
-        const worksheet = XLSX.utils.aoa_to_sheet(matriz);
-
-        worksheet['!merges'] = [];
-        for (let i = 0; i < arrayDiasDeLaSemana.length; i++) {
-            worksheet['!merges'].push({
-                s: { r: 1, c: i * 2 },
-                e: { r: 1, c: i * 2 + 1 }
-            });
-            worksheet['!merges'].push({
-                s: { r: 0, c: i * 2 },
-                e: { r: 0, c: i * 2 + 1 }
-            });
-        };
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, `Horas_${meses[mes]}_${anio}`);
-        XLSX.writeFile(workbook, `JornApp_Horas_${meses[mes]}_${anio}_${name}.xlsx`);
+    if (metodo === "1") {
+        exportEntradaSalida();
+    } else if (metodo === "2") {
+        exportHorasTrabajadas();
     } else {
         alert("No hay datos para exportar.");
     }
 }
 
+function importarEntradaSalida(consNombreArchivo, constReader) {
+    document.getElementById("select-metodo").value = "1";
+    metodo = "1";
+    const mesDelArchivo = meses.find(mes => consNombreArchivo.includes(mes));
+    mes = meses.indexOf(mesDelArchivo);
+    form.innerHTML = ``;
+    cargarPorEntradaSalida();
+    document.getElementById("selectMes").value = mes;
+    document.getElementById("selectMes").disabled = false;
+    constReader.onload = function (e) {
+        try {
+            const contenido = e.target.result;
+            const datos = JSON.parse(contenido);
+            for (let i = 0; i < datos.Hora_De_Entrada.length; i++) {
+                const c = i + 1;
+                const entrada = datos.Hora_De_Entrada[i];
+                const salida = datos.Hora_De_Salida[i];
+                const horaE = Math.floor(entrada);
+                const minutoE = Math.round((entrada - horaE) * 60);
+                const horaS = Math.floor(salida);
+                const minutoS = Math.round((salida - horaS) * 60);
+                document.getElementById(`HE${c}`).value = horaE.toString().padStart(2, "0");
+                document.getElementById(`ME${c}`).value = minutoE.toString().padStart(2, "0");
+                document.getElementById(`HS${c}`).value = horaS === 24 ? "00" : horaS.toString().padStart(2, "0");
+                document.getElementById(`MS${c}`).value = minutoS.toString().padStart(2, "0");
+                const check = document.getElementById(`checkBoxId${c}`);
+                if (datos.arrayCheckBoxFerDom[i] !== 0 && check) {
+                    check.checked = true;
+                } else if (check) {
+                    check.checked = false;
+                }
+            }
+            calcularPorEntradaSalida();
+            alert(`Datos cargados correctamente: ${consNombreArchivo}`);
+        } catch (error) {
+            console.log("Error al leer archivo JSON:", error)
+            alert("Error al leer archivo");
+        }
+    };
+}
+
+function importarHorasTrabajadas(consNombreArchivo, constReader) {
+    document.getElementById("select-metodo").value = "2";
+    metodo = "2";
+    const mesDelArchivo = meses.find(mes => consNombreArchivo.includes(mes));
+    mes = meses.indexOf(mesDelArchivo);
+    form.innerHTML = ``;
+    cargarPorHorasTrabajadas();
+    document.getElementById("selectMes").value = mes;
+    document.getElementById("selectMes").disabled = false;
+    constReader.onload = function (e) {
+        try {
+            const contenido = e.target.result;
+            const datos = JSON.parse(contenido);
+            for (let i = 0; i < datos.Horas_Diurnas.length; i++) {
+                const c = i + 1;
+                const diurnas = datos.Horas_Diurnas[i];
+                const nocturnas = datos.Horas_Nocturnas[i];
+                document.getElementById(`HD${c}`).value = diurnas.toString();
+                document.getElementById(`HN${c}`).value = nocturnas.toString();
+                const check = document.getElementById(`checkBoxId${c}`);
+                if (datos.arrayCheckBoxFerDom[i] !== 0 && check) {
+                    check.checked = true;
+                } else if (check) {
+                    check.checked = false;
+                }
+            }
+            calcularPorHorasTrabajadas();
+            alert(`Datos cargados correctamente: ${consNombreArchivo}`);
+        } catch (error) {
+            console.log("Error al leer archivo JSON:", error)
+            alert("Error al leer archivo");
+        }
+    };
+}
+
 document.getElementById("importarJson").addEventListener("change", function (event) {
-    reiniciarVariables();
     const file = event.target.files[0];
     if (!file) return;
-
     const nombreArchivo = file.name;
     const reader = new FileReader();
-
     if (nombreArchivo.includes("horas_entrada_salida")) {
-        document.getElementById("select-metodo").value = "2";
-        metodo = "2";
-        const mesDelArchivo = meses.find(mes => nombreArchivo.includes(mes));
-        mes = meses.indexOf(mesDelArchivo);
-        form.innerHTML = ``;
-        cargarPorEntradaSalida();
-        document.getElementById("selectMes").value = mes;
-        document.getElementById("selectMes").disabled = false;
-
-        reader.onload = function (e) {
-            try {
-                const contenido = e.target.result;
-                const datos = JSON.parse(contenido);
-                for (let i = 0; i < datos.Hora_De_Entrada.length; i++) {
-                    const c = i + 1;
-                    const entrada = datos.Hora_De_Entrada[i];
-                    const salida = datos.Hora_De_Salida[i];
-                    const horaE = Math.floor(entrada);
-                    const minutoE = Math.round((entrada - horaE) * 60);
-                    const horaS = Math.floor(salida);
-                    const minutoS = Math.round((salida - horaS) * 60);
-                    document.getElementById(`HE${c}`).value = horaE.toString().padStart(2, "0");
-                    document.getElementById(`ME${c}`).value = minutoE.toString().padStart(2, "0");
-                    document.getElementById(`HS${c}`).value = horaS === 24 ? "00" : horaS.toString().padStart(2, "0");
-                    document.getElementById(`MS${c}`).value = minutoS.toString().padStart(2, "0");
-                    const check = document.getElementById(`checkBoxId${c}`);
-                    if (datos.arrayCheckBoxFerDom[i] !== 0 && check) {
-                        check.checked = true;
-                    } else if (check) {
-                        check.checked = false;
-                    }
-                }
-                calcularPorEntradaSalida();
-                mostrarResultados();
-
-                alert(`Datos cargados correctamente: ${nombreArchivo}`);
-            } catch (error) {
-                console.log("Error al leer archivo JSON:", error)
-                alert("Error al leer archivo");
-            }
-        };
+        importarEntradaSalida(nombreArchivo, reader);
     } else if (nombreArchivo.includes("horas_trabajadas")) {
-        document.getElementById("select-metodo").value = "3";
-        metodo = "3";
-        const mesDelArchivo = meses.find(mes => nombreArchivo.includes(mes));
-        mes = meses.indexOf(mesDelArchivo);
-        form.innerHTML = ``;
-        cargarPorHorasTrabajadas();
-        document.getElementById("selectMes").value = mes;
-        document.getElementById("selectMes").disabled = false;
-
-        reader.onload = function (e) {
-            try {
-                const contenido = e.target.result;
-                const datos = JSON.parse(contenido);
-                for (let i = 0; i < datos.Horas_Diurnas.length; i++) {
-                    const c = i + 1;
-                    const diurnas = datos.Horas_Diurnas[i];
-                    const nocturnas = datos.Horas_Nocturnas[i];
-                    document.getElementById(`HD${c}`).value = diurnas.toString();
-                    document.getElementById(`HN${c}`).value = nocturnas.toString();
-                    const check = document.getElementById(`checkBoxId${c}`);
-                    if (datos.arrayCheckBoxFerDom[i] !== 0 && check) {
-                        check.checked = true;
-                    } else if (check) {
-                        check.checked = false;
-                    }
-                }
-                calcularPorHorasTrabajadas();
-                mostrarResultados();
-
-                alert(`Datos cargados correctamente: ${nombreArchivo}`);
-            } catch (error) {
-                console.log("Error al leer archivo JSON:", error)
-                alert("Error al leer archivo");
-            }
-        };
+        importarHorasTrabajadas(nombreArchivo, reader);
     } else {
         alert("El archivo no cumple el formato requerido.");
-
     }
     reader.readAsText(file);
 });

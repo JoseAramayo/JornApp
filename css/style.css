@@ -207,7 +207,7 @@ input {
 .columnWeek,
 .columnChkBox,
 .Column {
-    margin: 5px;
+    margin: 1%;
 }
 
 .inputHE,
@@ -352,9 +352,3 @@ a:hover {
     font-weight: bold;
     color: #808080;
 }
-
-/* *{
-    border: 1px solid black;
-    padding: 1%;
-    margin: 1%;
-} */
