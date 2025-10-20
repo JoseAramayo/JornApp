@@ -109,6 +109,10 @@ function cargarPorEntradaSalida() {
 
                 if (val < min) input.value = min;
                 else if (val > max) input.value = max;
+
+                if (input.value.length === 2) {
+                    autoAdvance(input);
+                }
             });
             input.addEventListener("blur", () => {
                 let val = parseInt(input.value);
@@ -117,6 +121,17 @@ function cargarPorEntradaSalida() {
                 }
             });
         });
+    }
+
+    function autoAdvance(currentInput) {
+        const allInputs = document.querySelectorAll('input[type="number"]');
+        const inputArray = Array.from(allInputs);
+        const currentIndex = inputArray.indexOf(currentInput);
+        
+        if (currentIndex !== -1 && currentIndex < inputArray.length - 1) {
+            const nextInput = inputArray[currentIndex + 1];
+            nextInput.focus();
+        }
     }
     validarInputRango("inputHE", 0, 23);
     validarInputRango("inputHS", 0, 23);

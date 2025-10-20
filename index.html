@@ -12,13 +12,11 @@
 
 <body>
     <nav>
-        <span>JornApp | </span>
+        <span class="JornApp-span">JornApp | </span>
         <div>
             <ul class="ulNAv">
                 <li class="liNav">
-                    <a
-                        href="\\10.57.1.253\Operaciones\Reportes Tecnicas Py\Laboratorio\Herramientas - Temporal\Aramayo con Vos\index.html">🏠︎
-                        Inicio</a>
+                    <a href="">Inicio</a>
                 </li>
             </ul>
         </div>
@@ -59,12 +57,13 @@
 
         <div class="containerTable">
             <div class="divGuia">
-                <h4 class="Desplegable" onclick="toggleContenido()" title="Click para más información!">⬇ Ver instrucciones
+                <h4 class="Desplegable" onclick="toggleContenido()" title="Click para más información!">⬇ Click para ver
+                    instrucciones
                 </h4>
                 <div class="contenido" id="contenido">
                     <ul>
                         <li><b>Método:</b> Elije un método para cargar tus horas.</li>
-                        <li><b>Días libres:</b> No completar casillas de Entrada y Salida.</li>
+                        <li><b>Días libres:</b> No completar casillas.</li>
                         <li><b>Fer/Dom:</b> Feriado/Domingo</li>
                         <li><b>Feriados:</b> Márcalos manualmente.</li>
                         <li><b>Domingos:</b> Se marcan automáticamente.</li>
@@ -157,15 +156,15 @@
             </div>
             <div class="containerDivs">
                 <div class="containerButtons">
-                    <button class="btnCalcular" onclick="calcular()">Calcula ✅</button>
-                    <button class="btnRefresh" onclick="reiniciar()">Reinicia 🔄</button>
-                    <button class="btnPrint" onclick="imprimir()" id="btnPrint">PDF 🖨️</button>
-                    <button class="btnSave" onclick="guardar()" id="btnSave">Guarda 💾</button>
-                    <button class="btnExport" onclick="Export()" id="btnExport">Excel 📈</button>
+                    <button class="btnCalcular" onclick="calcular()">Calcular</button>
+                    <button class="btnRefresh" onclick="reiniciar()">Reiniciar</button>
+                    <button class="btnPrint" onclick="imprimir()" id="btnPrint">PDF</button>
+                    <button class="btnSave" onclick="guardar()" id="btnSave">Guardar</button>
+                    <button class="btnExport" onclick="Export()" id="btnExport">Excel</button>
                 </div>
                 <hr>
                 <div class="containerImport">
-                    <p>Importar: </p>
+                    <p> <b>Importar horas: </b></p>
                     <input type="file" id="importarJson" accept=".json">
                 </div>
             </div>
